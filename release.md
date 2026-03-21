@@ -301,6 +301,17 @@ npm install /path/to/xerxisfy-elite-style-sheet-<version>.tgz
 npx x2s ./example/app.x2s ./example/app.css --sourcemap
 ```
 
+# Publish to npm 
+<!-- NEEDED: 
+1.You need to authorize this machine using `npm adduser`
+2.Requires you to be logged in to https://registry.npmjs.org/ 
+3 npm adduser -->
+npm run build
+npm test
+npm pack --dry-run
+npm publish --access public
+
+
 ## Definition of production ready
 
 X2S is ready for production npm usage when all of the following are true:
