@@ -224,7 +224,7 @@ These helpers compile to container query units and `calc(...)` expressions when 
 
 ## Editor Support
 
-VS Code support lives in [editors/vscode/README.md](/Users/xerxiscmuliro/xcss/editors/vscode/README.md). It includes:
+VS Code support lives in the repository under `editors/vscode/`. It includes:
 
 - `.x2s` language registration
 - syntax highlighting

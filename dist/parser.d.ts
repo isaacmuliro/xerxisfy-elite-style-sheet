@@ -1,0 +1,36 @@
+import { StylesheetNode } from './types';
+declare class Parser {
+    private readonly source;
+    private readonly filePath;
+    private readonly lineStarts;
+    private index;
+    constructor(source: string, filePath?: string);
+    parse(): StylesheetNode;
+    private parseStatements;
+    private parseStatement;
+    private buildDeclaration;
+    private buildInlineStatement;
+    private buildBlockStatement;
+    private parseImport;
+    private parseInclude;
+    private parseExtend;
+    private parseLayers;
+    private parseLock;
+    private parseMixin;
+    private parseIf;
+    private parseEach;
+    private parseFor;
+    private tryParseElse;
+    private readUntil;
+    private readBlockContent;
+    private findTopLevelDelimiter;
+    private splitDirective;
+    private splitCommaList;
+    private stripQuotes;
+    private skipWhitespaceAndComments;
+    private skipComment;
+    private isHashCommentStart;
+    private getLocation;
+    private formatError;
+}
+export { Parser };

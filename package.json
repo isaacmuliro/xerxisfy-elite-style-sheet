@@ -3,18 +3,43 @@
   "version": "1.0.0",
   "description": "X2S, a TypeScript CSS preprocessor and bundler for .x2s stylesheets.",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "bin": {
     "x2s": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "node dist/tests.js",
     "x2s": "node dist/index.js",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build && npm test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/my-preprocessor.git"
+    "url": "git+https://github.com/isaacmuliro/xerxisfy-elite-style-sheet.git"
+  },
+  "homepage": "https://github.com/isaacmuliro/xerxisfy-elite-style-sheet#readme",
+  "bugs": {
+    "url": "https://github.com/isaacmuliro/xerxisfy-elite-style-sheet/issues"
   },
   "keywords": [
     "x2s",
@@ -22,10 +47,16 @@
     "css",
     "compiler",
     "preprocessor",
-    "bundler"
+    "bundler",
+    "sass",
+    "less",
+    "stylus",
+    "postcss",
+    "source-maps",
+    "watch"
   ],
   "author": "Isac Muliro",
-  "license": "iMuliro Private License",
+  "license": "MIT",
   "devDependencies": {
     "typescript": "^4.9.5"
   },
