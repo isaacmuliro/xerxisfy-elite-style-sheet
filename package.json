@@ -1,0 +1,33 @@
+{
+  "name": "xerxisfy-elite-style-sheet",
+  "version": "1.0.0",
+  "description": "X2S, a TypeScript CSS preprocessor and bundler for .x2s stylesheets.",
+  "main": "dist/index.js",
+  "bin": {
+    "x2s": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node dist/tests.js",
+    "x2s": "node dist/index.js",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/my-preprocessor.git"
+  },
+  "keywords": [
+    "x2s",
+    "xerxisfy",
+    "css",
+    "compiler",
+    "preprocessor",
+    "bundler"
+  ],
+  "author": "Isac Muliro",
+  "license": "iMuliro Private License",
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {}
+}

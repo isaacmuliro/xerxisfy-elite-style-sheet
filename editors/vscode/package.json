@@ -1,0 +1,47 @@
+{
+  "name": "x2s-vscode-support",
+  "displayName": "X2S Language Support",
+  "description": "Language support and file icons for Xerxisfy Elite Style Sheet (.x2s).",
+  "version": "0.0.1",
+  "publisher": "xerxisfy",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Themes"
+  ],
+  "activationEvents": [
+    "onLanguage:x2s"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "x2s",
+        "aliases": [
+          "X2S",
+          "x2s",
+          "Xerxisfy Elite Style Sheet"
+        ],
+        "extensions": [
+          ".x2s"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "x2s",
+        "scopeName": "source.x2s",
+        "path": "./syntaxes/x2s.tmLanguage.json"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "x2s-icons",
+        "label": "X2S Icons",
+        "path": "./themes/x2s-icon-theme.json"
+      }
+    ]
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "X2S",
+  "scopeName": "source.x2s",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#interpolation"
+    },
+    {
+      "include": "#directives"
+    },
+    {
+      "include": "#variables"
+    },
+    {
+      "include": "#functions"
+    },
+    {
+      "include": "#colors"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#properties"
+    },
+    {
+      "include": "#selectors"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.x2s",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.line.number-sign.x2s",
+          "match": "^\\s*#\\s.*$"
+        },
+        {
+          "name": "comment.block.x2s",
+          "begin": "\\*\\*",
+          "end": "\\*\\*"
+        },
+        {
+          "name": "comment.block.css.x2s",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.x2s",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.x2s",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.x2s",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.x2s",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "interpolation": {
+      "patterns": [
+        {
+          "name": "meta.interpolation.x2s",
+          "begin": "#\\{",
+          "end": "\\}",
+          "patterns": [
+            {
+              "include": "#variables"
+            },
+            {
+              "include": "#numbers"
+            }
+          ]
+        }
+      ]
+    },
+    "directives": {
+      "patterns": [
+        {
+          "name": "keyword.control.at-rule.x2s",
+          "match": "@[a-zA-Z-]+"
+        }
+      ]
+    },
+    "variables": {
+      "patterns": [
+        {
+          "name": "variable.other.x2s",
+          "match": "\\$[A-Za-z_][\\w-]*"
+        }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {
+          "name": "support.function.x2s",
+          "match": "\\b(light|dark|math|mix|lighten|darken|alpha|cw|ch)\\s*(?=\\()"
+        }
+      ]
+    },
+    "colors": {
+      "patterns": [
+        {
+          "name": "constant.other.color.rgb-value.x2s",
+          "match": "#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.x2s",
+          "match": "\\b-?\\d*\\.?\\d+(?:%|px|rem|em|vh|vw|cqw|cqh|ms|s|deg)?\\b"
+        }
+      ]
+    },
+    "properties": {
+      "patterns": [
+        {
+          "name": "support.type.property-name.x2s",
+          "match": "\\b[a-zA-Z-]+(?=\\s*:)"
+        }
+      ]
+    },
+    "selectors": {
+      "patterns": [
+        {
+          "name": "entity.other.attribute-name.class.x2s",
+          "match": "\\.[A-Za-z_][\\w-]*"
+        },
+        {
+          "name": "entity.other.attribute-name.id.x2s",
+          "match": "#[A-Za-z_][\\w-]*"
+        },
+        {
+          "name": "entity.name.tag.x2s",
+          "match": "(?<=^|[\\s>+~,(])(?:[A-Za-z][\\w-]*)\\b"
+        },
+        {
+          "name": "keyword.operator.selector.x2s",
+          "match": "&"
+        }
+      ]
+    }
+  }
+}
