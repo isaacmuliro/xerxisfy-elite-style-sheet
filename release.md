@@ -6,7 +6,7 @@ Ship Xerxisfy Elite Style Sheet as a production-ready npm package that frontend 
 
 Target outcome:
 
-- `npm install xerxisfy-elite-style-sheet`
+- `npm install x2s`
 - stable `x2s` CLI
 - documented Node support policy
 - repeatable build and test pipeline
@@ -24,31 +24,30 @@ The project already has the hard part in place:
 - VS Code language support
 - roadmap features implemented end to end
 
-## Current blockers before public npm release
+## Remaining release gaps
 
-These are the main gaps that should be closed before asking developers to depend on X2S in production:
+These are the main gaps to close after the initial npm release if X2S is going to be treated as a long-term production tool:
 
-1. Package metadata is not release-grade yet.
-   - `package.json` still uses a placeholder repository URL.
-   - the current license is private and will block normal public npm adoption.
-   - there is no `homepage`, `bugs`, `engines`, `files`, or `exports` field.
+1. Package identity needs consolidation.
+   - the npm package should now be standardized on `x2s`.
+   - the old `xerxisfy-elite-style-sheet` package should be deprecated or removed if it still qualifies for unpublish.
+   - the repo name and package branding should be kept consistent over time.
 
-2. The published package shape is not locked down.
-   - there is no whitelist of files to publish.
-   - TypeScript declaration files are not emitted.
-   - the editor extension and compiler package are not clearly separated as release units.
+2. The published package shape can still be tightened.
+   - the editor extension and compiler package are still bundled in one repository even if they may become separate release units.
+   - install-from-tarball smoke tests should be part of every release.
 
 3. QA and CI are not strong enough yet.
    - there is no GitHub Actions pipeline for Linux, macOS, and Windows.
-   - there are no install-from-tarball smoke tests.
    - there are no snapshot fixtures for representative X2S projects.
+   - there is no automated publish gate against multiple Node versions.
 
-4. Release operations are manual.
+4. Release operations are still manual.
    - there is no changelog workflow.
    - there is no prerelease channel.
    - there is no npm provenance or publish automation.
 
-5. Public adoption docs are not complete.
+5. Public adoption docs still need expansion.
    - there is no migration guide from Sass/Less/Stylus.
    - there is no starter project.
    - there is no compatibility/support policy.
@@ -299,7 +298,7 @@ Tarball smoke test:
 mkdir -p /tmp/x2s-smoke
 cd /tmp/x2s-smoke
 npm init -y
-npm install /path/to/xerxisfy-elite-style-sheet-<version>.tgz
+npm install /path/to/x2s-<version>.tgz
 npx x2s ./example/app.x2s ./example/app.css --sourcemap
 ```
 
@@ -313,6 +312,45 @@ npm test
 npm pack --dry-run
 npm publish --access public
 
+<!-- run -->
+git add package.json package-lock.json release.md publish.sh
+git commit -m "Switch X2S to year-based versioning"
+./publish.sh
+<!-- verify -->
+npm view x2s@26.0.1 version
+<!-- Then -->
+git push origin main
+git tag v26.0.1
+git push origin v26.0.1
+
+## Rename and old package cleanup
+
+When moving the public package name from `xerxisfy-elite-style-sheet` to `x2s`, publish `x2s` first and verify it installs correctly before touching the old package.
+
+Recommended cleanup:
+
+```bash
+npm deprecate xerxisfy-elite-style-sheet@"*" "Package renamed to x2s. Install with: npm i -D x2s"
+```
+
+Only use unpublish if the old package still meets npm's unpublish policy:
+
+```bash
+npm unpublish xerxisfy-elite-style-sheet@1.0.0
+npm unpublish xerxisfy-elite-style-sheet@26.0.1
+```
+
+If every published version is eligible for removal, you can remove the whole package:
+
+```bash
+npm unpublish xerxisfy-elite-style-sheet --force
+```
+
+Notes:
+
+- `package@version` can never be reused after unpublish.
+- if you remove the entire package, npm blocks republishing that package name for 24 hours.
+- deprecation is the safer default when users may already depend on the old package.
 
 ## Definition of production ready
 

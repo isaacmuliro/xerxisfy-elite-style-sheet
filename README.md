@@ -1,6 +1,6 @@
-# Xerxisfy Elite Style Sheet
+# X2S
 
-Xerxisfy Elite Style Sheet, or `X2S`, is a TypeScript CSS preprocessor for `.x2s` files. It compiles a single entry file or an entire directory of `.x2s` sources into one CSS file and supports watch mode for iterative development.
+X2S, short for Xerxisfy Elite Style Sheet, is a TypeScript CSS preprocessor for `.x2s` files. It compiles a single entry file or an entire directory of `.x2s` sources into one CSS file and supports watch mode for iterative development.
 
 ## Implemented features
 
@@ -25,9 +25,41 @@ Xerxisfy Elite Style Sheet, or `X2S`, is a TypeScript CSS preprocessor for `.x2s
 - Automatic shared utility generation for repeated declaration groups
 - Repeated-rule deduplication to group identical declarations into shared selector blocks
 
+## Install
+
+Install X2S in an app project:
+
+```bash
+npm i -D x2s
+```
+
+If you want a regular dependency instead, the short branded install also works:
+
+```bash
+npm i x2s
+```
+
+Recommended project scripts:
+
+```json
+{
+  "scripts": {
+    "x2s": "x2s app.x2s app.css",
+    "x2s:watch": "x2s app.x2s app.css --watch"
+  }
+}
+```
+
+Then run:
+
+```bash
+npm run x2s
+npm run x2s:watch
+```
+
 ## CLI
 
-Build the project:
+Build this repo:
 
 ```bash
 npm run build
@@ -243,4 +275,3 @@ import { compileEntry, compileString } from './src/index';
 ## Status
 
 The current codebase is a working compiler foundation aligned with the goals in `Directions.md`. The remaining work is now mostly depth and refinement rather than missing core roadmap items.
-# xerxisfy-elite-style-sheet

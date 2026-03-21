@@ -10,6 +10,38 @@ X2S, short for Xerxisfy Elite Style Sheet, is a TypeScript-based CSS preprocesso
 - npm
 - TypeScript is already installed through the project dependencies
 
+## Install in an app
+
+Install X2S as a dev dependency:
+
+```bash
+npm i -D x2s
+```
+
+If you want a regular dependency instead:
+
+```bash
+npm i x2s
+```
+
+Recommended scripts for a consuming project:
+
+```json
+{
+  "scripts": {
+    "x2s": "x2s app.x2s app.css",
+    "x2s:watch": "x2s app.x2s app.css --watch"
+  }
+}
+```
+
+Run them with:
+
+```bash
+npm run x2s
+npm run x2s:watch
+```
+
 ## Project structure
 
 Key files and directories:
@@ -39,6 +71,12 @@ npm test
 ```
 
 ## Running the compiler
+
+Installed package usage:
+
+```bash
+npx x2s app.x2s app.css
+```
 
 Local repo usage:
 

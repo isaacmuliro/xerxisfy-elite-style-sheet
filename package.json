@@ -1,5 +1,5 @@
 {
-  "name": "xerxisfy-elite-style-sheet",
+  "name": "x2s",
   "version": "26.0.1",
   "description": "X2S, a TypeScript CSS preprocessor and bundler for .x2s stylesheets.",
   "main": "dist/index.js",
@@ -30,6 +30,7 @@
     "build": "tsc -p tsconfig.json",
     "test": "node dist/tests.js",
     "x2s": "node dist/index.js",
+    "x2s:watch": "node dist/index.js app.x2s app.css --watch",
     "prepare": "npm run build",
     "prepublishOnly": "npm run build && npm test"
   },
