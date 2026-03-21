@@ -102,6 +102,32 @@ version_exists() {
   npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version >/dev/null 2>&1
 }
 
+verify_published_version() {
+  local attempts=12
+  local delay_seconds=5
+  local attempt=1
+  local observed_version=""
+
+  while [[ "$attempt" -le "$attempts" ]]; do
+    observed_version="$(npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version 2>/dev/null || true)"
+    if [[ "$observed_version" == "$PACKAGE_VERSION" ]]; then
+      log "npm now reports ${PACKAGE_NAME}@${observed_version}"
+      return 0
+    fi
+
+    if [[ "$attempt" -lt "$attempts" ]]; then
+      log "Published package is not visible in the registry yet (attempt ${attempt}/${attempts}). Waiting ${delay_seconds}s."
+      sleep "$delay_seconds"
+    fi
+
+    attempt=$((attempt + 1))
+  done
+
+  warn "npm publish completed, but ${PACKAGE_NAME}@${PACKAGE_VERSION} is not visible via npm view yet. This is usually registry propagation delay."
+  warn "Verify manually in a minute with: npm view ${PACKAGE_NAME}@${PACKAGE_VERSION} version"
+  return 0
+}
+
 ensure_git_state() {
   if [[ ! -d "$ROOT_DIR/.git" ]]; then
     warn "No .git directory found. Skipping git checks."
@@ -223,10 +249,10 @@ run_publish() {
 
   log "Publishing $PACKAGE_NAME@$PACKAGE_VERSION with tag '$PUBLISH_TAG'"
   npm publish --access public --tag "$PUBLISH_TAG"
+  log "npm publish completed"
 
   log "Verifying published version"
-  PUBLISHED_VERSION="$(npm view "$PACKAGE_NAME" version)"
-  log "npm now reports $PACKAGE_NAME@$PUBLISHED_VERSION"
+  verify_published_version
 }
 
 main() {

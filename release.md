@@ -202,9 +202,11 @@ Tasks:
   - `next` for prereleases
   - `latest` for stable releases
 - define semver policy:
-  - patch: bug fixes and non-breaking polyfill additions
-  - minor: new X2S language features
-  - major: syntax or output-breaking changes
+  - use year-based semver for stable releases, for example `26.0.1`
+  - first number: release year in two-digit form
+  - second number: major line within that year
+  - third number: patch/build increment for that line
+  - prereleases can follow standard semver suffixes such as `26.0.1-beta.1`
 
 Exit criteria:
 
@@ -219,7 +221,7 @@ Get real-world feedback before calling the package stable.
 
 Tasks:
 
-- publish `1.0.0-beta.1` or `1.1.0-beta.1` under `next`
+- publish `26.0.1-beta.1` under `next`
 - dogfood X2S in one or two internal or personal frontend projects
 - collect issues specifically around:
   - watch mode behavior

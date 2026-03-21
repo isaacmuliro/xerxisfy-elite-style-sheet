@@ -1,6 +1,6 @@
 {
   "name": "xerxisfy-elite-style-sheet",
-  "version": "1.0.0",
+  "version": "26.0.1",
   "description": "X2S, a TypeScript CSS preprocessor and bundler for .x2s stylesheets.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
