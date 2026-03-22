@@ -1,13 +1,13 @@
-# X2S VS Code Support
+# Muro VS Code Support
 
-This folder contains a minimal VS Code extension for `.x2s` files.
+This folder contains a minimal VS Code extension for `.mss` files, with `.x2s` kept for one transition release.
 
 ## What it adds
 
-- `.x2s` language registration
+- `.mss` language registration
 - Syntax highlighting for variables, directives, selectors, colors, functions, and comments
 - Bracket pairing and comment configuration
-- An `X2S Icons` file icon theme with a custom icon for `.x2s`
+- A `Muro Icons` file icon theme with a custom icon for `.mss`
 
 ## Local use
 
@@ -18,8 +18,8 @@ code editors/vscode
 ```
 
 2. Press `F5` to launch an Extension Development Host.
-3. In the development host, open any `.x2s` file.
-4. Optionally select the `X2S Icons` file icon theme from:
+3. In the development host, open any `.mss` file.
+4. Optionally select the `Muro Icons` file icon theme from:
    `Preferences: File Icon Theme`
 
 ## Notes

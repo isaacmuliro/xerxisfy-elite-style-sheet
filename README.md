@@ -1,6 +1,6 @@
-# X2S
+# Muro Style Sheet
 
-X2S, short for Xerxisfy Elite Style Sheet, is a TypeScript CSS preprocessor for `.x2s` files. It compiles a single entry file or an entire directory of `.x2s` sources into one CSS file and supports watch mode for iterative development.
+Muro Style Sheet is a TypeScript CSS preprocessor for `.mss` files. It compiles a single entry file or an entire directory of `.mss` sources into one CSS file and supports watch mode for iterative development.
 
 ## Implemented features
 
@@ -11,12 +11,12 @@ X2S, short for Xerxisfy Elite Style Sheet, is a TypeScript CSS preprocessor for 
 - Nesting with `&` selector interpolation
 - `@mixin` and `@include`
 - `@import` partials
-- Built-in module libraries via `@import "x2s:reset"`, `x2s:grid`, `x2s:typography`, or `x2s:all`
+- Built-in module libraries via `@import "muro:reset"`, `muro:grid`, `muro:typography`, or `muro:all`
 - `@extend`
 - `@if`, `@each`, and `@for`
 - Theme baking with `light(...) dark(...)`
 - Semantic layering with `layer: modal;`
-- Xerx Guard locks with `@lock`
+- Muro Guard locks with `@lock`
 - Comments with `//`, `#` at the start of a line, and `** ... **`
 - External and inline source maps
 - Broader zero-config polyfilling for logical properties, layout shorthands, and browser-sensitive properties
@@ -27,16 +27,16 @@ X2S, short for Xerxisfy Elite Style Sheet, is a TypeScript CSS preprocessor for 
 
 ## Install
 
-Install X2S in an app project:
+Install Muro in an app project:
 
 ```bash
-npm i -D x2s
+npm i -D muro-css
 ```
 
 If you want a regular dependency instead, the short branded install also works:
 
 ```bash
-npm i x2s
+npm i muro-css
 ```
 
 Recommended project scripts:
@@ -44,8 +44,8 @@ Recommended project scripts:
 ```json
 {
   "scripts": {
-    "x2s": "x2s app.x2s app.css",
-    "x2s:watch": "x2s app.x2s app.css --watch"
+    "muro": "muro app.mss app.css",
+    "muro:watch": "muro app.mss app.css --watch"
   }
 }
 ```
@@ -53,9 +53,15 @@ Recommended project scripts:
 Then run:
 
 ```bash
-npm run x2s
-npm run x2s:watch
+npm run muro
+npm run muro:watch
 ```
+
+Legacy compatibility:
+
+- `.x2s` files still compile for one release
+- legacy `x2s:*` and `@x2s/*` built-in imports still resolve for one release
+- the `x2s` CLI alias is still shipped for one release
 
 ## CLI
 
@@ -68,69 +74,69 @@ npm run build
 Run it locally from this repo:
 
 ```bash
-npm run x2s -- app.x2s app.css
+npm run muro -- app.mss app.css
 ```
 
 You can also invoke the built entry directly:
 
 ```bash
-node dist/index.js app.x2s app.css
+node dist/index.js app.mss app.css
 ```
 
-If you want the bare `x2s` command in your shell, link the package once:
+If you want the bare `muro` command in your shell, link the package once:
 
 ```bash
 npm link
-x2s app.x2s app.css
+muro app.mss app.css
 ```
 
 Compile a file:
 
 ```bash
-npm run x2s -- app.x2s app.css
+npm run muro -- app.mss app.css
 ```
 
 Compile a directory:
 
 ```bash
-npm run x2s -- ./styles ./public/styles.css
+npm run muro -- ./styles ./public/styles.css
 ```
 
 Watch for changes:
 
 ```bash
-npm run x2s -- ./styles ./public/styles.css --watch
+npm run muro -- ./styles ./public/styles.css --watch
 ```
 
 Purge unused selectors using HTML or JS content:
 
 ```bash
-npm run x2s -- ./styles ./public/styles.css --purge "./src,./public"
+npm run muro -- ./styles ./public/styles.css --purge "./src,./public"
 ```
 
 Emit an external source map:
 
 ```bash
-npm run x2s -- app.x2s app.css --sourcemap
+npm run muro -- app.mss app.css --sourcemap
 ```
 
 Emit an inline source map:
 
 ```bash
-npm run x2s -- app.x2s app.css --inline-sourcemap
+npm run muro -- app.mss app.css --inline-sourcemap
 ```
 
 Write generated `.webp` assets to a custom directory:
 
 ```bash
-npm run x2s -- app.x2s app.css --asset-dir ./public/generated-assets
+npm run muro -- app.mss app.css --asset-dir ./public/generated-assets
 ```
 
 ## Comments
 
-X2S accepts these comment styles:
+Muro accepts these comment styles:
 
-```x2s
+```mss
 // single-line comment
 # single-line comment at the start of a line
 ** block comment **
@@ -140,7 +146,7 @@ X2S accepts these comment styles:
 
 ## Syntax examples
 
-```x2s
+```mss
 $brand: #224466;
 
 @mixin card($radius: 12px) {
@@ -181,7 +187,7 @@ header .cta {
 
 Inside a rule, lock brand-critical properties:
 
-```x2s
+```mss
 .brand-button {
   color: #111111;
   @lock color;
@@ -190,7 +196,7 @@ Inside a rule, lock brand-critical properties:
 
 Or lock an explicit selector:
 
-```x2s
+```mss
 .theme {
   color: #111111;
 }
@@ -200,50 +206,50 @@ Or lock an explicit selector:
 
 ## Built-In Modules
 
-X2S includes importable module libraries for reset, grid, and typography:
+Muro includes importable module libraries for reset, grid, and typography:
 
-```x2s
-@import "x2s:reset";
-@import "x2s:grid";
-@import "x2s:typography";
+```mss
+@import "muro:reset";
+@import "muro:grid";
+@import "muro:typography";
 ```
 
 Or import all three at once:
 
-```x2s
-@import "x2s:all";
+```mss
+@import "muro:all";
 ```
 
-The grid and typography modules also expose mixins such as `x2s-container`, `x2s-row`, `x2s-span`, `x2s-heading`, and `x2s-copy`.
+The grid and typography modules also expose mixins such as `muro-container`, `muro-row`, `muro-span`, `muro-heading`, and `muro-copy`.
 
 ## Asset Processing
 
-Local `.png`, `.jpg`, and `.jpeg` URLs are rewritten to generated `.webp` files during compilation when X2S can reach a converter. The compiler currently tries:
+Local `.png`, `.jpg`, and `.jpeg` URLs are rewritten to generated `.webp` files during compilation when Muro can reach a converter. The compiler currently tries:
 
-- `X2S_WEBP_CONVERTER` if you set it
+- `MURO_WEBP_CONVERTER` if you set it
 - `cwebp`
 - `magick`
 - `ffmpeg`
 
 Example:
 
-```x2s
+```mss
 .hero {
   background-image: url("./hero.png");
 }
 ```
 
-This emits the converted asset into `x2s-assets/` beside the compiled CSS by default, then rewrites the CSS URL to the new `.webp` path.
+This emits the converted asset into `muro-assets/` beside the compiled CSS by default, then rewrites the CSS URL to the new `.webp` path.
 
 ## Shared Utilities
 
-X2S now detects repeated declaration groups and emits shared utility blocks such as `.x2s-u-1`. It uses utility-backed custom properties so the original declarations stay in place while repeated values are centralized.
+Muro now detects repeated declaration groups and emits shared utility blocks such as `.muro-u-1`. It uses utility-backed custom properties so the original declarations stay in place while repeated values are centralized.
 
 ## Container Math
 
-X2S now supports expression-aware container helpers:
+Muro now supports expression-aware container helpers:
 
-```x2s
+```mss
 .panel {
   inline-size: ci(75%);
   max-inline-size: cmin(50% - 1rem);
@@ -258,10 +264,10 @@ These helpers compile to container query units and `calc(...)` expressions when 
 
 VS Code support lives in the repository under `editors/vscode/`. It includes:
 
-- `.x2s` language registration
+- `.mss` language registration
 - syntax highlighting
 - comment and bracket configuration
-- an `X2S Icons` file icon theme for `.x2s`
+- an `Muro Icons` file icon theme for `.mss`
 
 ## API
 
@@ -270,7 +276,7 @@ import { compileEntry, compileString } from './src/index';
 ```
 
 - `compileEntry(path, options)` compiles a file or directory
-- `compileString(source, filePath, options)` compiles inline X2S source
+- `compileString(source, filePath, options)` compiles inline Muro source
 
 ## Status
 

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert = require('assert');
+const childProcess = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -46,7 +47,7 @@ function testCompilerCore() {
             }
         }
     `;
-    const result = (0, index_1.compileString)(source, 'core.x2s', { dedupe: false });
+    const result = (0, index_1.compileString)(source, 'core.mss', { dedupe: false });
     assertIncludes(result.css, '.panel {');
     assertIncludes(result.css, 'border-radius: 12px;');
     assertIncludes(result.css, 'display: -webkit-box;');
@@ -58,13 +59,13 @@ function testCompilerCore() {
     assertIncludes(result.css, 'width: 50%;');
 }
 function testProjectCompileAndPurge() {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'x2s-project-'));
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'muro-project-'));
     const stylesRoot = path.join(tempRoot, 'styles');
     const contentRoot = path.join(tempRoot, 'content');
     fs.mkdirSync(stylesRoot, { recursive: true });
     fs.mkdirSync(contentRoot, { recursive: true });
-    fs.writeFileSync(path.join(stylesRoot, '_tokens.x2s'), '$accent: #ff5500;', 'utf8');
-    fs.writeFileSync(path.join(stylesRoot, 'main.x2s'), `
+    fs.writeFileSync(path.join(stylesRoot, '_tokens.mss'), '$accent: #ff5500;', 'utf8');
+    fs.writeFileSync(path.join(stylesRoot, 'main.mss'), `
         @import "./_tokens";
 
         .used-card {
@@ -92,7 +93,7 @@ function testProjectCompileAndPurge() {
     assertIncludes(result.css, 'display: -webkit-box;');
     assertExcludes(result.css, '.ghost-rule');
 }
-function testXerxGuard() {
+function testMuroGuard() {
     const source = `
         .brand-button {
             color: #111111;
@@ -104,8 +105,8 @@ function testXerxGuard() {
         }
     `;
     assert.throws(() => {
-        (0, index_1.compileString)(source, 'guard.x2s', { dedupe: false });
-    }, /Xerx Guard blocked override/);
+        (0, index_1.compileString)(source, 'guard.mss', { dedupe: false });
+    }, /Muro Guard blocked override/);
 }
 function testComments() {
     const source = `
@@ -126,7 +127,7 @@ function testComments() {
             background: $brand;
         }
     `;
-    const result = (0, index_1.compileString)(source, 'comments.x2s');
+    const result = (0, index_1.compileString)(source, 'comments.mss');
     assertIncludes(result.css, '#hero {');
     assertIncludes(result.css, '.button {');
     assertIncludes(result.css, 'color: #ffffff;');
@@ -143,13 +144,13 @@ function testSourceMaps() {
             hyphens: auto;
         }
     `;
-    const result = (0, index_1.compileString)(source, 'maps.x2s', {
+    const result = (0, index_1.compileString)(source, 'maps.mss', {
         sourceMap: true,
         outputFile: 'maps.css'
     });
     assert.ok(result.sourceMap, 'Expected a source map to be generated');
     assert.strictEqual(result.sourceMap.file, 'maps.css');
-    assert.ok(result.sourceMap.sources.indexOf('maps.x2s') !== -1, 'Expected maps.x2s in source map sources');
+    assert.ok(result.sourceMap.sources.indexOf('maps.mss') !== -1, 'Expected maps.mss in source map sources');
     assert.ok(result.sourceMap.sourcesContent[0].indexOf('$brand') !== -1, 'Expected source contents to be embedded');
     assert.ok(result.sourceMap.mappings.length > 0, 'Expected non-empty source map mappings');
     assertIncludes(result.css, '-webkit-hyphens: auto;');
@@ -187,7 +188,7 @@ function testContextVariables() {
             color: $primary;
         }
     `;
-    const result = (0, index_1.compileString)(source, 'context.x2s');
+    const result = (0, index_1.compileString)(source, 'context.mss');
     assertIncludes(result.css, 'header {');
     assertIncludes(result.css, 'color: #1b3652;');
     assertIncludes(result.css, 'header .title {');
@@ -213,43 +214,74 @@ function testSharedUtilities() {
             padding: 4px;
         }
     `;
-    const result = (0, index_1.compileString)(source, 'utilities.x2s');
-    assertIncludes(result.css, '.x2s-u-1, .card, .badge {');
-    assertIncludes(result.css, '--x2s-u-1-align-items-');
-    assertIncludes(result.css, 'align-items: var(--x2s-u-1-align-items-');
+    const result = (0, index_1.compileString)(source, 'utilities.mss');
+    assertIncludes(result.css, '.muro-u-1, .card, .badge {');
+    assertIncludes(result.css, '--muro-u-1-align-items-');
+    assertIncludes(result.css, 'align-items: var(--muro-u-1-align-items-');
     assertIncludes(result.css, 'gap: 1rem;');
     assertIncludes(result.css, 'padding: 4px;');
 }
 function testBuiltInModules() {
     const source = `
-        @import "x2s:reset";
-        @import "@x2s/grid";
+        @import "muro:reset";
+        @import "@muro/grid";
         @import "x2s:typography";
 
         .layout {
-            @include x2s-container(80rem, 2rem);
+            @include muro-container(80rem, 2rem);
         }
 
-        .layout-row {
-            @include x2s-row(2rem);
+        .legacy-layout {
+            @include x2s-container(72rem, 1.5rem);
         }
 
         .copy {
-            @include x2s-copy(72ch);
+            @include muro-copy(72ch);
+        }
+
+        .legacy-copy {
+            @include x2s-copy(60ch);
         }
     `;
-    const result = (0, index_1.compileString)(source, 'builtins.x2s');
+    const result = (0, index_1.compileString)(source, 'builtins.mss');
     assertIncludes(result.css, '*, *::before, *::after {');
-    assertIncludes(result.css, '.x2s-container {');
-    assertIncludes(result.css, '.x2s-span-6 {');
-    assertIncludes(result.css, 'width: 50%;');
-    assertIncludes(result.css, 'h1 {');
+    assertIncludes(result.css, '.muro-container');
+    assertIncludes(result.css, '.x2s-container');
+    assertIncludes(result.css, '.muro-span-6');
+    assertIncludes(result.css, '.x2s-span-6');
     assertIncludes(result.css, '.layout {');
     assertIncludes(result.css, 'padding-inline: 2rem;');
-    assertIncludes(result.css, '.layout-row {');
-    assertIncludes(result.css, 'gap: 2rem;');
+    assertIncludes(result.css, '.legacy-layout {');
+    assertIncludes(result.css, 'padding-inline: 1.5rem;');
     assertIncludes(result.css, '.copy {');
     assertIncludes(result.css, 'max-width: 72ch;');
+    assertIncludes(result.css, '.legacy-copy {');
+    assertIncludes(result.css, 'max-width: 60ch;');
+}
+function testImportPreferenceAndLegacyExtensions() {
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'muro-imports-'));
+    const sourceFile = path.join(tempRoot, 'main.mss');
+    const legacySourceFile = path.join(tempRoot, 'legacy.x2s');
+    fs.writeFileSync(path.join(tempRoot, '_tokens.mss'), '$tone: #112233;', 'utf8');
+    fs.writeFileSync(path.join(tempRoot, '_tokens.x2s'), '$tone: #445566;', 'utf8');
+    fs.writeFileSync(sourceFile, `
+        @import "./_tokens";
+
+        .tone {
+            color: $tone;
+        }
+    `, 'utf8');
+    fs.writeFileSync(legacySourceFile, `
+        @import "./_tokens";
+
+        .legacy-tone {
+            color: $tone;
+        }
+    `, 'utf8');
+    const modernResult = (0, index_1.compileString)(fs.readFileSync(sourceFile, 'utf8'), sourceFile);
+    const legacyResult = (0, index_1.compileString)(fs.readFileSync(legacySourceFile, 'utf8'), legacySourceFile);
+    assertIncludes(modernResult.css, 'color: #112233;');
+    assertIncludes(legacyResult.css, 'color: #112233;');
 }
 function testPolyfillsAndContainerMath() {
     const source = `
@@ -268,7 +300,7 @@ function testPolyfillsAndContainerMath() {
             text-decoration-skip-ink: auto;
         }
     `;
-    const result = (0, index_1.compileString)(source, 'polyfills.x2s');
+    const result = (0, index_1.compileString)(source, 'polyfills.mss');
     assertIncludes(result.css, '.layout {');
     assertIncludes(result.css, 'width: 75cqi;');
     assertIncludes(result.css, 'inline-size: 75cqi;');
@@ -293,9 +325,9 @@ function testPolyfillsAndContainerMath() {
     assertIncludes(result.css, '-webkit-mask-image: linear-gradient(#000000, transparent);');
     assertIncludes(result.css, '-webkit-text-decoration-skip: ink;');
 }
-function testAssetConversion() {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'x2s-assets-'));
-    const sourceFile = path.join(tempRoot, 'app.x2s');
+function runAssetConversionWithEnv(envVar) {
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'muro-assets-'));
+    const sourceFile = path.join(tempRoot, 'app.mss');
     const imageFile = path.join(tempRoot, 'hero.png');
     const outputFile = path.join(tempRoot, 'dist', 'app.css');
     const converterFile = path.join(tempRoot, 'fake-webp.sh');
@@ -306,29 +338,42 @@ function testAssetConversion() {
         }
     `, 'utf8');
     fs.writeFileSync(converterFile, '#!/bin/sh\ncp "$1" "$2"\n', { mode: 0o755 });
-    const previousConverter = process.env.X2S_WEBP_CONVERTER;
-    process.env.X2S_WEBP_CONVERTER = converterFile;
+    const previousPrimary = process.env.MURO_WEBP_CONVERTER;
+    const previousLegacy = process.env.X2S_WEBP_CONVERTER;
+    delete process.env.MURO_WEBP_CONVERTER;
+    delete process.env.X2S_WEBP_CONVERTER;
+    process.env[envVar] = converterFile;
     try {
         const result = (0, index_1.compileString)(fs.readFileSync(sourceFile, 'utf8'), sourceFile, {
             cwd: tempRoot,
             outputFile
         });
-        assertIncludes(result.css, 'background-image: url("./x2s-assets/hero-');
+        assertIncludes(result.css, 'background-image: url("./muro-assets/hero-');
         assertIncludes(result.css, '.webp");');
         assert.strictEqual(result.warnings.length, 0);
-        const assetsDirectory = path.join(tempRoot, 'dist', 'x2s-assets');
+        const assetsDirectory = path.join(tempRoot, 'dist', 'muro-assets');
         const emittedAssets = fs.readdirSync(assetsDirectory);
         assert.strictEqual(emittedAssets.length, 1);
         assert.ok(emittedAssets[0].endsWith('.webp'), `Expected a .webp asset, received ${emittedAssets[0]}`);
     }
     finally {
-        if (previousConverter === undefined) {
+        if (previousPrimary === undefined) {
+            delete process.env.MURO_WEBP_CONVERTER;
+        }
+        else {
+            process.env.MURO_WEBP_CONVERTER = previousPrimary;
+        }
+        if (previousLegacy === undefined) {
             delete process.env.X2S_WEBP_CONVERTER;
         }
         else {
-            process.env.X2S_WEBP_CONVERTER = previousConverter;
+            process.env.X2S_WEBP_CONVERTER = previousLegacy;
         }
     }
+}
+function testAssetConversion() {
+    runAssetConversionWithEnv('MURO_WEBP_CONVERTER');
+    runAssetConversionWithEnv('X2S_WEBP_CONVERTER');
 }
 function testRejectsMarkdownFences() {
     const source = `
@@ -336,28 +381,77 @@ function testRejectsMarkdownFences() {
             color: red;
         }
 
-        \`\`\`x2s
+        \`\`\`mss
         .card {
             color: blue;
         }
         \`\`\`
     `;
     assert.throws(() => {
-        (0, index_1.compileString)(source, 'markdown.x2s');
-    }, /Markdown\/code fences are not valid X2S syntax/);
+        (0, index_1.compileString)(source, 'markdown.mss');
+    }, /Markdown\/code fences are not valid Muro Style Sheet syntax/);
+}
+function testLegacyCompatibility() {
+    const source = `
+        @import "x2s:grid";
+        @import "@x2s/typography";
+
+        .legacy-layout {
+            @include x2s-container(64rem, 1rem);
+        }
+
+        .legacy-copy {
+            @include x2s-copy(48ch);
+        }
+    `;
+    const result = (0, index_1.compileString)(source, 'legacy.x2s');
+    assertIncludes(result.css, '.legacy-layout {');
+    assertIncludes(result.css, 'padding-inline: var(--muro-u-');
+    assertIncludes(result.css, '.legacy-copy {');
+    assertIncludes(result.css, 'max-width: 48ch;');
+}
+function testCliAndPackageMetadata() {
+    const packageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', 'package.json'), 'utf8'));
+    assert.strictEqual(packageJson.name, 'muro-css');
+    assert.strictEqual(packageJson.bin.muro, 'dist/index.js');
+    assert.strictEqual(packageJson.bin.x2s, 'dist/index.js');
+    const cliPath = path.resolve(__dirname, 'index.js');
+    const usageRun = childProcess.spawnSync(process.execPath, [cliPath], { encoding: 'utf8' });
+    assert.strictEqual(usageRun.status, 1);
+    assertIncludes(usageRun.stdout, 'Usage: muro <input-file-or-directory> [output.css] [options]');
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'muro-cli-'));
+    const stylesRoot = path.join(tempRoot, 'styles');
+    fs.mkdirSync(stylesRoot, { recursive: true });
+    fs.writeFileSync(path.join(stylesRoot, 'app.mss'), `
+        .panel {
+            display: flex;
+        }
+    `, 'utf8');
+    const compileRun = childProcess.spawnSync(process.execPath, [cliPath, stylesRoot], {
+        cwd: tempRoot,
+        encoding: 'utf8'
+    });
+    assert.strictEqual(compileRun.status, 0, compileRun.stderr);
+    assertIncludes(compileRun.stdout, `compiled 1 rules -> ${path.join(stylesRoot, 'muro.css')}`);
+    assert.ok(fs.existsSync(path.join(stylesRoot, 'muro.css')), 'Expected muro.css to be emitted for directory compilation');
+    const cliSource = fs.readFileSync(cliPath, 'utf8');
+    assertIncludes(cliSource, '\\.(mss|x2s|html|js|jsx|ts|tsx)');
 }
 function run() {
     testCompilerCore();
     testProjectCompileAndPurge();
-    testXerxGuard();
+    testMuroGuard();
     testComments();
     testSourceMaps();
     testContextVariables();
     testSharedUtilities();
     testBuiltInModules();
+    testImportPreferenceAndLegacyExtensions();
     testPolyfillsAndContainerMath();
     testAssetConversion();
     testRejectsMarkdownFences();
-    console.log('All X2S tests passed.');
+    testLegacyCompatibility();
+    testCliAndPackageMetadata();
+    console.log('All Muro tests passed.');
 }
 run();

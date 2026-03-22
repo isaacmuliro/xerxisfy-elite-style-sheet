@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseCliArguments = exports.splitByComma = exports.discoverEntries = exports.resolveImportPath = exports.walkDirectory = exports.ensureDirectory = exports.normalizePath = exports.validateInput = exports.formatString = void 0;
 const fs = require('fs');
 const path = require('path');
+const constants_1 = require("../constants");
 function formatString(input) {
     return input.trim().replace(/\s+/g, ' ');
 }
@@ -51,9 +52,12 @@ function resolveImportPath(importPath, fromFile) {
     const ext = path.extname(rawTarget);
     const candidates = [
         rawTarget,
-        ext ? '' : `${rawTarget}.x2s`,
-        ext ? '' : path.join(path.dirname(rawTarget), `_${path.basename(rawTarget)}.x2s`),
-        ext ? '' : path.join(rawTarget, 'index.x2s')
+        ext ? '' : `${rawTarget}${constants_1.PRIMARY_STYLE_EXTENSION}`,
+        ext ? '' : path.join(path.dirname(rawTarget), `_${path.basename(rawTarget)}${constants_1.PRIMARY_STYLE_EXTENSION}`),
+        ext ? '' : path.join(rawTarget, `index${constants_1.PRIMARY_STYLE_EXTENSION}`),
+        ext ? '' : `${rawTarget}${constants_1.LEGACY_STYLE_EXTENSION}`,
+        ext ? '' : path.join(path.dirname(rawTarget), `_${path.basename(rawTarget)}${constants_1.LEGACY_STYLE_EXTENSION}`),
+        ext ? '' : path.join(rawTarget, `index${constants_1.LEGACY_STYLE_EXTENSION}`)
     ].filter(Boolean);
     for (const candidate of candidates) {
         if (fs.existsSync(candidate)) {
@@ -70,14 +74,17 @@ function discoverEntries(entryPath) {
     }
     const stats = fs.statSync(absoluteEntry);
     if (stats.isDirectory()) {
-        const discovered = walkDirectory(absoluteEntry, '.x2s', false);
+        const discovered = [
+            ...walkDirectory(absoluteEntry, constants_1.PRIMARY_STYLE_EXTENSION, false),
+            ...walkDirectory(absoluteEntry, constants_1.LEGACY_STYLE_EXTENSION, false)
+        ];
         if (discovered.length === 0) {
-            throw new Error(`No .x2s files found in ${absoluteEntry}`);
+            throw new Error(`No ${constants_1.PRIMARY_STYLE_EXTENSION} or ${constants_1.LEGACY_STYLE_EXTENSION} files found in ${absoluteEntry}`);
         }
         return discovered;
     }
-    if (!absoluteEntry.endsWith('.x2s')) {
-        throw new Error(`Expected a .x2s file or directory, received ${absoluteEntry}`);
+    if (!absoluteEntry.endsWith(constants_1.PRIMARY_STYLE_EXTENSION) && !absoluteEntry.endsWith(constants_1.LEGACY_STYLE_EXTENSION)) {
+        throw new Error(`Expected a ${constants_1.PRIMARY_STYLE_EXTENSION} or ${constants_1.LEGACY_STYLE_EXTENSION} file or directory, received ${absoluteEntry}`);
     }
     return [absoluteEntry];
 }

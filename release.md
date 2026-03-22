@@ -1,13 +1,13 @@
-# X2S Release Roadmap
+# Muro Release Roadmap
 
 ## Goal
 
-Ship Xerxisfy Elite Style Sheet as a production-ready npm package that frontend developers can install, run in CI, trust in daily development, and integrate into real projects without needing the repo open beside them.
+Ship Muro Style Sheet as a production-ready npm package that frontend developers can install, run in CI, trust in daily development, and integrate into real projects without needing the repo open beside them.
 
 Target outcome:
 
-- `npm install x2s`
-- stable `x2s` CLI
+- `npm install muro-css`
+- stable `muro` CLI
 - documented Node support policy
 - repeatable build and test pipeline
 - versioned releases with changelog and rollback path
@@ -26,10 +26,10 @@ The project already has the hard part in place:
 
 ## Remaining release gaps
 
-These are the main gaps to close after the initial npm release if X2S is going to be treated as a long-term production tool:
+These are the main gaps to close after the initial npm release if Muro is going to be treated as a long-term production tool:
 
 1. Package identity needs consolidation.
-   - the npm package should now be standardized on `x2s`.
+   - the npm package should now be standardized on `muro-css`.
    - the old `xerxisfy-elite-style-sheet` package should be deprecated or removed if it still qualifies for unpublish.
    - the repo name and package branding should be kept consistent over time.
 
@@ -39,7 +39,7 @@ These are the main gaps to close after the initial npm release if X2S is going t
 
 3. QA and CI are not strong enough yet.
    - there is no GitHub Actions pipeline for Linux, macOS, and Windows.
-   - there are no snapshot fixtures for representative X2S projects.
+   - there are no snapshot fixtures for representative Muro projects.
    - there is no automated publish gate against multiple Node versions.
 
 4. Release operations are still manual.
@@ -90,7 +90,7 @@ Tasks:
 - emit `.d.ts` files by enabling TypeScript declaration output
 - add an `engines.node` field with the supported runtime range
 - add `prepublishOnly` checks so broken builds cannot be published
-- verify `bin.x2s` works after `npm pack` and local install
+- verify `bin.muro` works after `npm pack` and local install
 - decide whether `editors/vscode/` should move to its own extension package
 
 Recommended package shape:
@@ -107,7 +107,7 @@ Recommended package shape:
 Exit criteria:
 
 - `npm pack` produces a clean tarball
-- installing the tarball exposes the `x2s` binary
+- installing the tarball exposes the `muro` binary
 - `import { compileEntry, compileString }` works with shipped type declarations
 
 ## Phase 3: CI, tests, and quality gates
@@ -159,16 +159,16 @@ Tasks:
   - a built-in-modules demo
   - a container-math/polyfill demo
 - document recommended scripts for app teams:
-  - `x2s src/styles app.css`
-  - `x2s src/styles app.css --watch`
-  - `x2s src/styles app.css --purge "./src,./public"`
+  - `muro src/styles app.css`
+  - `muro src/styles app.css --watch`
+  - `muro src/styles app.css --purge "./src,./public"`
 - add a migration guide:
   - Sass nesting
   - mixins
   - variables
   - loops
   - imports
-  - what is different in X2S
+  - what is different in Muro
 - add a troubleshooting section for:
   - unknown import errors
   - lock failures
@@ -181,7 +181,7 @@ Tasks:
 
 Exit criteria:
 
-- a new developer can install and run X2S from docs alone
+- a new developer can install and run Muro from docs alone
 - the top 10 support questions are already answered in the docs
 
 ## Phase 5: Release automation and versioning
@@ -221,7 +221,7 @@ Get real-world feedback before calling the package stable.
 Tasks:
 
 - publish `26.0.1-beta.1` under `next`
-- dogfood X2S in one or two internal or personal frontend projects
+- dogfood Muro in one or two internal or personal frontend projects
 - collect issues specifically around:
   - watch mode behavior
   - source map quality
@@ -232,7 +232,7 @@ Tasks:
 
 Exit criteria:
 
-- at least 2 real projects have used X2S successfully
+- at least 2 real projects have used Muro successfully
 - no critical correctness issues remain open
 
 ## Phase 7: General availability
@@ -295,11 +295,11 @@ npm pack
 Tarball smoke test:
 
 ```bash
-mkdir -p /tmp/x2s-smoke
-cd /tmp/x2s-smoke
+mkdir -p /tmp/muro-smoke
+cd /tmp/muro-smoke
 npm init -y
-npm install /path/to/x2s-<version>.tgz
-npx x2s ./example/app.x2s ./example/app.css --sourcemap
+npm install /path/to/muro-css-<version>.tgz
+npx muro ./example/app.mss ./example/app.css --sourcemap
 ```
 
 # Publish to npm 
@@ -314,10 +314,10 @@ npm publish --access public
 
 <!-- run -->
 git add package.json package-lock.json release.md publish.sh
-git commit -m "Switch X2S to year-based versioning"
+git commit -m "Publish Muro Style Sheet"
 ./publish.sh
 <!-- verify -->
-npm view x2s@26.0.1 version
+npm view muro-css@26.0.1 version
 <!-- Then -->
 git push origin main
 git tag v26.0.1
@@ -325,12 +325,12 @@ git push origin v26.0.1
 
 ## Rename and old package cleanup
 
-When moving the public package name from `xerxisfy-elite-style-sheet` to `x2s`, publish `x2s` first and verify it installs correctly before touching the old package.
+When moving the public package name from `xerxisfy-elite-style-sheet` to `muro-css`, publish `muro-css` first and verify it installs correctly before touching the old package.
 
 Recommended cleanup:
 
 ```bash
-npm deprecate xerxisfy-elite-style-sheet@"*" "Package renamed to x2s. Install with: npm i -D x2s"
+npm deprecate xerxisfy-elite-style-sheet@"*" "Package renamed to muro-css. Install with: npm i -D muro-css and run the muro CLI."
 ```
 
 Only use unpublish if the old package still meets npm's unpublish policy:
@@ -354,7 +354,7 @@ Notes:
 
 ## Definition of production ready
 
-X2S is ready for production npm usage when all of the following are true:
+Muro is ready for production npm usage when all of the following are true:
 
 - developers can install it from npm without cloning the repo
 - the CLI works the same on macOS, Linux, and Windows

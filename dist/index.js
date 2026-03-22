@@ -4,11 +4,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.compileString = exports.compileEntry = exports.Compiler = void 0;
 const compiler_1 = require("./compiler");
 Object.defineProperty(exports, "Compiler", { enumerable: true, get: function () { return compiler_1.Compiler; } });
+const constants_1 = require("./constants");
 const helpers_1 = require("./utils/helpers");
 const fs = require('fs');
 const path = require('path');
 const { Buffer } = require('buffer');
-const WATCHABLE_PATTERN = /\.(x2s|html|js|jsx|ts|tsx)$/i;
+const WATCHABLE_PATTERN = /\.(mss|x2s|html|js|jsx|ts|tsx)$/i;
 function compileEntry(entryPath, options = {}) {
     const compiler = new compiler_1.Compiler({
         ...options,
@@ -17,7 +18,7 @@ function compileEntry(entryPath, options = {}) {
     return compiler.compileEntry(entryPath);
 }
 exports.compileEntry = compileEntry;
-function compileString(source, filePath = 'inline.x2s', options = {}) {
+function compileString(source, filePath = `inline${constants_1.PRIMARY_STYLE_EXTENSION}`, options = {}) {
     const compiler = new compiler_1.Compiler({
         ...options,
         cwd: options.cwd || process.cwd()
@@ -29,9 +30,9 @@ function defaultOutputPath(entryPath) {
     const absolutePath = (0, helpers_1.normalizePath)(entryPath);
     const stats = fs.statSync(absolutePath);
     if (stats.isDirectory()) {
-        return path.join(absolutePath, 'x2s.css');
+        return path.join(absolutePath, `${constants_1.PRIMARY_CLI_NAME}.css`);
     }
-    return absolutePath.replace(/\.x2s$/i, '.css');
+    return absolutePath.replace(/\.(mss|x2s)$/i, '.css');
 }
 function sourceMapOutputPath(outputPath) {
     return `${outputPath}.map`;
@@ -76,7 +77,7 @@ function runCompilation(entryPath, outputPath, options) {
 }
 function printUsage() {
     console.log([
-        'Usage: x2s <input-file-or-directory> [output.css] [options]',
+        `Usage: ${constants_1.PRIMARY_CLI_NAME} <input-file-or-directory> [output.css] [options]`,
         '',
         'Options:',
         '  --watch, -w       Rebuild on change',
@@ -86,7 +87,9 @@ function printUsage() {
         '  --asset-dir <dir> Write generated .webp assets to a custom directory',
         '  --purge <paths>   Comma-separated content paths for ghost purging',
         '  --no-assets       Disable automatic .webp asset processing',
-        '  --no-dedupe       Disable repeated-rule deduplication'
+        '  --no-dedupe       Disable repeated-rule deduplication',
+        '',
+        `Legacy compatibility: ${constants_1.LEGACY_CLI_NAME} and .x2s remain supported for one release.`
     ].join('\n'));
 }
 function collectDirectories(rootPath) {
@@ -112,6 +115,43 @@ function collectContentFiles(rootPath) {
         files.push(...(0, helpers_1.walkDirectory)(rootPath, extension, true));
     });
     return files.map((filePath) => (0, helpers_1.normalizePath)(filePath));
+}
+function fileMtime(filePath) {
+    if (!fs.existsSync(filePath)) {
+        return undefined;
+    }
+    return fs.statSync(filePath).mtimeMs;
+}
+function snapshotWatchableDirectory(directoryPath, outputPath) {
+    const snapshot = new Map();
+    const absoluteDirectory = (0, helpers_1.normalizePath)(directoryPath);
+    const absoluteOutput = (0, helpers_1.normalizePath)(outputPath);
+    if (!fs.existsSync(absoluteDirectory) || !fs.statSync(absoluteDirectory).isDirectory()) {
+        return snapshot;
+    }
+    const entries = fs.readdirSync(absoluteDirectory, { withFileTypes: true });
+    entries.forEach((entry) => {
+        if (!entry.isFile()) {
+            return;
+        }
+        const fullPath = (0, helpers_1.normalizePath)(path.join(absoluteDirectory, entry.name));
+        if (fullPath === absoluteOutput || !WATCHABLE_PATTERN.test(fullPath)) {
+            return;
+        }
+        snapshot.set(fullPath, fs.statSync(fullPath).mtimeMs);
+    });
+    return snapshot;
+}
+function snapshotsDiffer(left, right) {
+    if (left.size !== right.size) {
+        return true;
+    }
+    for (const [filePath, mtime] of left.entries()) {
+        if (right.get(filePath) !== mtime) {
+            return true;
+        }
+    }
+    return false;
 }
 function collectWatchTargets(entryPath, dependencies, purgeContent, outputPath, cwd) {
     const targets = new Set();
@@ -150,6 +190,8 @@ function collectWatchTargets(entryPath, dependencies, purgeContent, outputPath, 
 function watchProject(entryPath, outputPath, options) {
     let watchers = [];
     let timer = null;
+    const watchedFileMtims = new Map();
+    const watchedDirectorySnapshots = new Map();
     let lastWatchTargets = collectWatchTargets(entryPath, [entryPath], options.purgeContent || [], outputPath, options.cwd || process.cwd());
     const closeWatchers = () => {
         watchers.forEach(watcher => watcher.close());
@@ -163,6 +205,12 @@ function watchProject(entryPath, outputPath, options) {
             }
             const absoluteTarget = (0, helpers_1.normalizePath)(targetPath);
             const isDirectory = fs.statSync(absoluteTarget).isDirectory();
+            if (isDirectory) {
+                watchedDirectorySnapshots.set(absoluteTarget, snapshotWatchableDirectory(absoluteTarget, absoluteOutput));
+            }
+            else {
+                watchedFileMtims.set(absoluteTarget, fileMtime(absoluteTarget));
+            }
             const watcher = fs.watch(absoluteTarget, { persistent: true }, (_eventType, filename) => {
                 if (filename) {
                     const changedPath = (0, helpers_1.normalizePath)(path.resolve(isDirectory ? absoluteTarget : path.dirname(absoluteTarget), filename));
@@ -175,6 +223,22 @@ function watchProject(entryPath, outputPath, options) {
                     if (!isDirectory && !WATCHABLE_PATTERN.test(absoluteTarget)) {
                         return;
                     }
+                }
+                else if (isDirectory) {
+                    const previousSnapshot = watchedDirectorySnapshots.get(absoluteTarget) || new Map();
+                    const nextSnapshot = snapshotWatchableDirectory(absoluteTarget, absoluteOutput);
+                    if (!snapshotsDiffer(previousSnapshot, nextSnapshot)) {
+                        return;
+                    }
+                    watchedDirectorySnapshots.set(absoluteTarget, nextSnapshot);
+                }
+                else {
+                    const previousMtime = watchedFileMtims.get(absoluteTarget);
+                    const nextMtime = fileMtime(absoluteTarget);
+                    if (previousMtime === nextMtime) {
+                        return;
+                    }
+                    watchedFileMtims.set(absoluteTarget, nextMtime);
                 }
                 if (timer) {
                     clearTimeout(timer);

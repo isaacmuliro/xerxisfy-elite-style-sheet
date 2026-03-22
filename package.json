@@ -1,7 +1,7 @@
 {
-  "name": "x2s",
+  "name": "muro-css",
   "version": "26.0.1",
-  "description": "X2S, a TypeScript CSS preprocessor and bundler for .x2s stylesheets.",
+  "description": "Muro Style Sheet, a TypeScript CSS preprocessor and bundler for .mss stylesheets.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -13,6 +13,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
+    "muro": "dist/index.js",
     "x2s": "dist/index.js"
   },
   "files": [
@@ -29,8 +30,10 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "node dist/tests.js",
+    "muro": "node dist/index.js",
+    "muro:watch": "node dist/index.js app.mss app.css --watch",
     "x2s": "node dist/index.js",
-    "x2s:watch": "node dist/index.js app.x2s app.css --watch",
+    "x2s:watch": "node dist/index.js app.mss app.css --watch",
     "prepare": "npm run build",
     "prepublishOnly": "npm run build && npm test"
   },
@@ -43,8 +46,9 @@
     "url": "https://github.com/isaacmuliro/xerxisfy-elite-style-sheet/issues"
   },
   "keywords": [
+    "muro",
+    "mss",
     "x2s",
-    "xerxisfy",
     "css",
     "compiler",
     "preprocessor",

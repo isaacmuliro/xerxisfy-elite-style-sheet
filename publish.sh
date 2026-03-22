@@ -150,8 +150,8 @@ ensure_git_state() {
 }
 
 setup_npm_auth() {
-  TMP_NPMRC="$(mktemp "${TMPDIR:-/tmp}/x2s-npmrc.XXXXXX")"
-  TMP_CACHE="$(mktemp -d "${TMPDIR:-/tmp}/x2s-npm-cache.XXXXXX")"
+  TMP_NPMRC="$(mktemp "${TMPDIR:-/tmp}/muro-npmrc.XXXXXX")"
+  TMP_CACHE="$(mktemp -d "${TMPDIR:-/tmp}/muro-npm-cache.XXXXXX")"
 
   cat > "$TMP_NPMRC" <<EOF
 //registry.npmjs.org/:_authToken=${NPM_TOKEN}

@@ -17,6 +17,7 @@ import {
     StylesheetNode,
     VariableDeclarationNode
 } from './types';
+import { PRIMARY_BRAND_NAME, PRIMARY_STYLE_EXTENSION } from './constants';
 
 class Parser {
     private readonly source: string;
@@ -24,7 +25,7 @@ class Parser {
     private readonly lineStarts: number[];
     private index: number;
 
-    constructor(source: string, filePath: string = 'inline.x2s') {
+    constructor(source: string, filePath: string = `inline${PRIMARY_STYLE_EXTENSION}`) {
         this.source = source;
         this.filePath = filePath;
         this.index = 0;
@@ -41,7 +42,7 @@ class Parser {
         const invalidBacktick = this.source.indexOf('`');
         if (invalidBacktick !== -1) {
             throw new Error(
-                this.formatError('Unexpected "`". Markdown/code fences are not valid X2S syntax', invalidBacktick)
+                this.formatError(`Unexpected "\`". Markdown/code fences are not valid ${PRIMARY_BRAND_NAME} syntax`, invalidBacktick)
             );
         }
 

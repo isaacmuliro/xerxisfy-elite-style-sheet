@@ -1,8 +1,8 @@
-# X2S full showcase file
+# Muro full showcase file
 ** This sample exercises most language and compiler features in one place. **
 
-@import "x2s:all";
-@import "./_app.tokens.x2s";
+@import "muro:all";
+@import "./_app.tokens.mss";
 
 @layers page, nav, overlay, modal, toast, tooltip;
 
@@ -59,7 +59,7 @@ body {
 @lock .theme-shell => background;
 
 header.site-header {
-  @include x2s-container(84rem, 1.25rem);
+  @include muro-container(84rem, 1.25rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -92,7 +92,7 @@ header.site-header {
 }
 
 .dashboard {
-  @include x2s-container(84rem, 1.25rem);
+  @include muro-container(84rem, 1.25rem);
   display: grid;
   gap: 1.5rem;
   padding-block: 2rem 4rem;
@@ -125,13 +125,13 @@ header.site-header {
   }
 
   .hero-title {
-    @include x2s-heading(4rem, 800);
+    @include muro-heading(4rem, 800);
     margin-block: 0.25rem 1rem;
     color: light($ink) dark(#ffffff);
   }
 
   .hero-body {
-    @include x2s-copy(56ch);
+    @include muro-copy(56ch);
     color: mix($ink, #ffffff, 12%);
   }
 }
@@ -261,7 +261,7 @@ header.site-header {
 }
 
 footer.site-footer {
-  @include x2s-container(84rem, 1.25rem);
+  @include muro-container(84rem, 1.25rem);
   display: flex;
   align-items: center;
   justify-content: space-between;

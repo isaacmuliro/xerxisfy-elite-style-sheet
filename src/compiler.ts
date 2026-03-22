@@ -3,6 +3,14 @@ const path = require('path');
 const crypto = require('crypto');
 const childProcess = require('child_process');
 
+import {
+    LEGACY_WEBP_ENV_VAR,
+    PRIMARY_ASSET_DIR,
+    PRIMARY_LOCK_NAME,
+    PRIMARY_STYLE_EXTENSION,
+    PRIMARY_UTILITY_PREFIX,
+    PRIMARY_WEBP_ENV_VAR
+} from './constants';
 import { resolveBuiltinModule } from './builtin-modules';
 import { Parser } from './parser';
 import { SourceMapBuilder } from './source-map';
@@ -114,7 +122,7 @@ class Compiler {
         return this.finalize();
     }
 
-    public compileString(source: string, filePath: string = 'inline.x2s'): CompileResult {
+    public compileString(source: string, filePath: string = `inline${PRIMARY_STYLE_EXTENSION}`): CompileResult {
         this.reset();
         const stylesheet = new Parser(source, filePath).parse();
         this.sourceContents.set(filePath, source);
@@ -581,7 +589,7 @@ class Compiler {
                 const lockedValue = this.locks.get(lockKey);
                 if (lockedValue && lockedValue !== declaration.value) {
                     throw new Error(
-                        `Xerx Guard blocked override of ${selector} { ${declaration.property}: ${lockedValue} } at ${this.formatLocation(source)}`
+                        `${PRIMARY_LOCK_NAME} blocked override of ${selector} { ${declaration.property}: ${lockedValue} } at ${this.formatLocation(source)}`
                     );
                 }
             }
@@ -781,7 +789,7 @@ class Compiler {
                 }
 
                 const utilityId = ++this.utilityCounter;
-                const utilitySelector = `.x2s-u-${utilityId}`;
+                const utilitySelector = `.${PRIMARY_UTILITY_PREFIX}-${utilityId}`;
                 const utilityDeclarations: CssDeclaration[] = [];
                 const utilitySelectors = [utilitySelector];
 
@@ -1061,7 +1069,7 @@ class Compiler {
             const converted = this.convertAssetToWebp(absoluteInputPath, outputAssetPath);
             if (!converted) {
                 this.warn(
-                    `Unable to convert ${absoluteInputPath} to WebP. Install cwebp, ImageMagick, ffmpeg, or set X2S_WEBP_CONVERTER.`
+                    `Unable to convert ${absoluteInputPath} to WebP. Install cwebp, ImageMagick, ffmpeg, or set ${PRIMARY_WEBP_ENV_VAR}.`
                 );
                 return null;
             }
@@ -1114,7 +1122,7 @@ class Compiler {
                 : path.resolve(this.options.cwd || process.cwd(), this.options.assetOutputDir);
         }
 
-        return path.join(path.dirname(outputFile), 'x2s-assets');
+        return path.join(path.dirname(outputFile), PRIMARY_ASSET_DIR);
     }
 
     private buildAssetFileName(inputPath: string): string {
@@ -1132,7 +1140,7 @@ class Compiler {
     }
 
     private convertAssetToWebp(inputPath: string, outputPath: string): boolean {
-        const customConverter = process.env.X2S_WEBP_CONVERTER;
+        const customConverter = process.env[PRIMARY_WEBP_ENV_VAR] || process.env[LEGACY_WEBP_ENV_VAR];
         if (customConverter && this.runAssetConverter(customConverter, [inputPath, outputPath])) {
             return true;
         }
@@ -2106,7 +2114,7 @@ class Compiler {
 
     private utilityVariableName(utilityId: number, property: string, index: number): string {
         const normalizedProperty = property.replace(/[^a-zA-Z0-9-]/g, '-');
-        return `--x2s-u-${utilityId}-${normalizedProperty}-${index}`;
+        return `--${PRIMARY_UTILITY_PREFIX}-${utilityId}-${normalizedProperty}-${index}`;
     }
 
     private unique<T>(values: T[]): T[] {

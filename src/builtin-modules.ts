@@ -6,8 +6,8 @@ interface BuiltinModule {
 
 const BUILTIN_MODULES: BuiltinModule[] = [
     {
-        id: 'x2s:reset',
-        aliases: ['@x2s/reset'],
+        id: 'muro:reset',
+        aliases: ['@muro/reset', 'x2s:reset', '@x2s/reset'],
         source: `
             *, *::before, *::after {
                 box-sizing: border-box;
@@ -48,35 +48,64 @@ const BUILTIN_MODULES: BuiltinModule[] = [
         `
     },
     {
-        id: 'x2s:grid',
-        aliases: ['@x2s/grid'],
+        id: 'muro:grid',
+        aliases: ['@muro/grid', 'x2s:grid', '@x2s/grid'],
         source: `
-            $x2s-grid-columns: 12;
-            $x2s-grid-gap: 1rem;
-            $x2s-grid-max: 72rem;
+            $muro-grid-columns: 12;
+            $muro-grid-gap: 1rem;
+            $muro-grid-max: 72rem;
 
-            @mixin x2s-container($max: $x2s-grid-max, $padding: 1rem) {
+            $x2s-grid-columns: $muro-grid-columns;
+            $x2s-grid-gap: $muro-grid-gap;
+            $x2s-grid-max: $muro-grid-max;
+
+            @mixin muro-container($max: $muro-grid-max, $padding: 1rem) {
                 width: min(100%, $max);
                 margin-inline: auto;
                 padding-inline: $padding;
             }
 
-            @mixin x2s-row($gap: $x2s-grid-gap) {
+            @mixin muro-row($gap: $muro-grid-gap) {
                 display: flex;
                 flex-wrap: wrap;
                 gap: $gap;
             }
 
-            @mixin x2s-span($count, $columns: $x2s-grid-columns) {
+            @mixin muro-span($count, $columns: $muro-grid-columns) {
                 width: math(($count / $columns) * 100%);
             }
 
+            @mixin x2s-container($max: $muro-grid-max, $padding: 1rem) {
+                @include muro-container($max, $padding);
+            }
+
+            @mixin x2s-row($gap: $muro-grid-gap) {
+                @include muro-row($gap);
+            }
+
+            @mixin x2s-span($count, $columns: $muro-grid-columns) {
+                @include muro-span($count, $columns);
+            }
+
+            .muro-container {
+                @include muro-container;
+            }
+
             .x2s-container {
-                @include x2s-container;
+                @include muro-container;
+            }
+
+            .muro-row {
+                @include muro-row;
             }
 
             .x2s-row {
-                @include x2s-row;
+                @include muro-row;
+            }
+
+            .muro-col {
+                flex: 1 1 0;
+                min-width: 0;
             }
 
             .x2s-col {
@@ -85,65 +114,97 @@ const BUILTIN_MODULES: BuiltinModule[] = [
             }
 
             @for $i from 1 through 12 {
+                .muro-span-#{$i} {
+                    @include muro-span($i);
+                }
+
                 .x2s-span-#{$i} {
-                    @include x2s-span($i);
+                    @include muro-span($i);
                 }
             }
         `
     },
     {
-        id: 'x2s:typography',
-        aliases: ['@x2s/typography'],
+        id: 'muro:typography',
+        aliases: ['@muro/typography', 'x2s:typography', '@x2s/typography'],
         source: `
-            $x2s-font-sans: "Avenir Next", "Segoe UI", sans-serif;
-            $x2s-font-serif: "Iowan Old Style", "Times New Roman", serif;
-            $x2s-font-mono: "SFMono-Regular", "SF Mono", monospace;
+            $muro-font-sans: "Avenir Next", "Segoe UI", sans-serif;
+            $muro-font-serif: "Iowan Old Style", "Times New Roman", serif;
+            $muro-font-mono: "SFMono-Regular", "SF Mono", monospace;
 
-            @mixin x2s-heading($size: 2.5rem, $weight: 700) {
-                font-family: $x2s-font-sans;
+            $x2s-font-sans: $muro-font-sans;
+            $x2s-font-serif: $muro-font-serif;
+            $x2s-font-mono: $muro-font-mono;
+
+            @mixin muro-heading($size: 2.5rem, $weight: 700) {
+                font-family: $muro-font-sans;
                 font-size: $size;
                 font-weight: $weight;
                 line-height: 1.1;
                 letter-spacing: -0.02em;
             }
 
-            @mixin x2s-copy($measure: 65ch) {
+            @mixin muro-copy($measure: 65ch) {
                 max-width: $measure;
                 line-height: 1.7;
             }
 
+            @mixin x2s-heading($size: 2.5rem, $weight: 700) {
+                @include muro-heading($size, $weight);
+            }
+
+            @mixin x2s-copy($measure: 65ch) {
+                @include muro-copy($measure);
+            }
+
             body {
-                font-family: $x2s-font-sans;
+                font-family: $muro-font-sans;
                 line-height: 1.6;
                 color: #111111;
             }
 
             h1 {
-                @include x2s-heading(3.5rem, 800);
+                @include muro-heading(3.5rem, 800);
             }
 
             h2 {
-                @include x2s-heading(2.75rem, 750);
+                @include muro-heading(2.75rem, 750);
             }
 
             h3 {
-                @include x2s-heading(2rem, 700);
+                @include muro-heading(2rem, 700);
             }
 
             code, pre {
-                font-family: $x2s-font-mono;
+                font-family: $muro-font-mono;
+            }
+
+            .muro-prose {
+                @include muro-copy;
             }
 
             .x2s-prose {
-                @include x2s-copy;
+                @include muro-copy;
+            }
+
+            .muro-balance {
+                text-wrap: balance;
             }
 
             .x2s-balance {
                 text-wrap: balance;
             }
 
+            .muro-kicker {
+                font-family: $muro-font-sans;
+                font-size: 0.875rem;
+                font-weight: 700;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+            }
+
             .x2s-kicker {
-                font-family: $x2s-font-sans;
+                font-family: $muro-font-sans;
                 font-size: 0.875rem;
                 font-weight: 700;
                 letter-spacing: 0.12em;
@@ -152,12 +213,12 @@ const BUILTIN_MODULES: BuiltinModule[] = [
         `
     },
     {
-        id: 'x2s:all',
-        aliases: ['@x2s/all'],
+        id: 'muro:all',
+        aliases: ['@muro/all', 'x2s:all', '@x2s/all'],
         source: `
-            @import "x2s:reset";
-            @import "x2s:grid";
-            @import "x2s:typography";
+            @import "muro:reset";
+            @import "muro:grid";
+            @import "muro:typography";
         `
     }
 ];

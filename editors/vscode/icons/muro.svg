@@ -3,5 +3,5 @@
   <path d="M88 12v28h24" fill="#f6d683"/>
   <path d="M88 12l24 28" stroke="#b17900" stroke-width="4" fill="none"/>
   <rect x="24" y="44" width="80" height="50" rx="12" fill="#1f2630"/>
-  <text x="64" y="76" text-anchor="middle" font-family="Verdana, sans-serif" font-size="26" font-weight="700" fill="#f0bb4d">X2S</text>
+  <text x="64" y="76" text-anchor="middle" font-family="Verdana, sans-serif" font-size="23" font-weight="700" fill="#f0bb4d">MURO</text>
 </svg>

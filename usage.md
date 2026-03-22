@@ -1,8 +1,8 @@
-# X2S Usage Guide
+# Muro Usage Guide
 
 ## Overview
 
-X2S, short for Xerxisfy Elite Style Sheet, is a TypeScript-based CSS preprocessor for `.x2s` files. It compiles a single file or a directory of files into one CSS output, with support for nesting, variables, mixins, imports, built-in module libraries, asset processing, loops, theme baking, semantic layers, guard locks, purge, deduplication, source maps, and watch mode.
+Muro Style Sheet is a TypeScript-based CSS preprocessor for `.mss` files. It compiles a single file or a directory of files into one CSS output, with support for nesting, variables, mixins, imports, built-in module libraries, asset processing, loops, theme baking, semantic layers, guard locks, purge, deduplication, source maps, and watch mode.
 
 ## Requirements
 
@@ -12,16 +12,16 @@ X2S, short for Xerxisfy Elite Style Sheet, is a TypeScript-based CSS preprocesso
 
 ## Install in an app
 
-Install X2S as a dev dependency:
+Install Muro as a dev dependency:
 
 ```bash
-npm i -D x2s
+npm i -D muro-css
 ```
 
 If you want a regular dependency instead:
 
 ```bash
-npm i x2s
+npm i muro-css
 ```
 
 Recommended scripts for a consuming project:
@@ -29,8 +29,8 @@ Recommended scripts for a consuming project:
 ```json
 {
   "scripts": {
-    "x2s": "x2s app.x2s app.css",
-    "x2s:watch": "x2s app.x2s app.css --watch"
+    "muro": "muro app.mss app.css",
+    "muro:watch": "muro app.mss app.css --watch"
   }
 }
 ```
@@ -38,16 +38,22 @@ Recommended scripts for a consuming project:
 Run them with:
 
 ```bash
-npm run x2s
-npm run x2s:watch
+npm run muro
+npm run muro:watch
 ```
+
+Transition compatibility for this release:
+
+- `.x2s` entry files and imports are still accepted
+- legacy `x2s:*` and `@x2s/*` built-in imports still resolve
+- the `x2s` CLI alias is still published beside `muro`
 
 ## Project structure
 
 Key files and directories:
 
 - `src/index.ts`: CLI entrypoint and public API
-- `src/parser.ts`: Parses `.x2s` source into an AST
+- `src/parser.ts`: Parses `.mss` source into an AST
 - `src/compiler.ts`: Compiles the AST into CSS
 - `src/source-map.ts`: Source map generation
 - `src/tests.ts`: Integration-style test coverage
@@ -75,26 +81,26 @@ npm test
 Installed package usage:
 
 ```bash
-npx x2s app.x2s app.css
+npx muro app.mss app.css
 ```
 
 Local repo usage:
 
 ```bash
-npm run x2s -- app.x2s app.css
+npm run muro -- app.mss app.css
 ```
 
 Direct Node usage:
 
 ```bash
-node dist/index.js app.x2s app.css
+node dist/index.js app.mss app.css
 ```
 
-If you want the `x2s` command globally in your shell:
+If you want the `muro` command globally in your shell:
 
 ```bash
 npm link
-x2s app.x2s app.css
+muro app.mss app.css
 ```
 
 ## CLI options
@@ -102,61 +108,61 @@ x2s app.x2s app.css
 Basic compilation:
 
 ```bash
-npm run x2s -- app.x2s app.css
+npm run muro -- app.mss app.css
 ```
 
-Compile a directory of `.x2s` files into one CSS file:
+Compile a directory of `.mss` files into one CSS file:
 
 ```bash
-npm run x2s -- ./styles ./public/styles.css
+npm run muro -- ./styles ./public/styles.css
 ```
 
 Watch mode:
 
 ```bash
-npm run x2s -- app.x2s app.css --watch
+npm run muro -- app.mss app.css --watch
 ```
 
 Minified output:
 
 ```bash
-npm run x2s -- app.x2s app.css --minify
+npm run muro -- app.mss app.css --minify
 ```
 
 Ghost purging using markup or app source:
 
 ```bash
-npm run x2s -- ./styles ./public/styles.css --purge "./src,./public"
+npm run muro -- ./styles ./public/styles.css --purge "./src,./public"
 ```
 
 External source map:
 
 ```bash
-npm run x2s -- app.x2s app.css --sourcemap
+npm run muro -- app.mss app.css --sourcemap
 ```
 
 Inline source map:
 
 ```bash
-npm run x2s -- app.x2s app.css --inline-sourcemap
+npm run muro -- app.mss app.css --inline-sourcemap
 ```
 
 Write generated `.webp` assets to a custom directory:
 
 ```bash
-npm run x2s -- app.x2s app.css --asset-dir ./public/generated-assets
+npm run muro -- app.mss app.css --asset-dir ./public/generated-assets
 ```
 
 Disable automatic asset processing:
 
 ```bash
-npm run x2s -- app.x2s app.css --no-assets
+npm run muro -- app.mss app.css --no-assets
 ```
 
 Disable repeated-rule deduplication:
 
 ```bash
-npm run x2s -- app.x2s app.css --no-dedupe
+npm run muro -- app.mss app.css --no-dedupe
 ```
 
 ## What gets generated
@@ -179,14 +185,14 @@ With `--inline-sourcemap`:
 With asset conversion enabled and a supported converter available:
 
 - `app.css`
-- `x2s-assets/*.webp` by default, or files under the path passed to `--asset-dir`
+- `muro-assets/*.webp` by default, or files under the path passed to `--asset-dir`
 - rewritten asset URLs in the generated CSS
 
-## Supported X2S syntax
+## Supported Muro syntax
 
 ### Comments
 
-```x2s
+```mss
 // single-line comment
 # single-line comment when # starts the line
 ** block comment **
@@ -194,7 +200,7 @@ With asset conversion enabled and a supported converter available:
 
 `#` comments are only treated as comments when the `#` is the first non-whitespace character on the line. That keeps these valid:
 
-```x2s
+```mss
 $brand: #224466;
 
 #hero {
@@ -204,7 +210,7 @@ $brand: #224466;
 
 ### Variables
 
-```x2s
+```mss
 $brand: #224466;
 
 .button {
@@ -216,7 +222,7 @@ Variables are resolved through lexical scope. Inner scopes can shadow outer vari
 
 ### Context-aware scoped global variables
 
-```x2s
+```mss
 $primary: #224466;
 
 @context header {
@@ -239,14 +245,14 @@ footer .cta {
 How it works:
 
 - local variables still win first
-- if there is no local override, X2S checks matching `@context` blocks
-- if no context matches, X2S falls back to the global variable value
+- if there is no local override, Muro checks matching `@context` blocks
+- if no context matches, Muro falls back to the global variable value
 
 This lets one global token adapt automatically to selector context without repeating variable names.
 
 ### Nesting
 
-```x2s
+```mss
 .card {
   color: black;
 
@@ -262,90 +268,90 @@ This lets one global token adapt automatically to selector context without repea
 
 ### Imports and partials
 
-```x2s
+```mss
 @import "./tokens";
 @import "./components/button";
-@import "x2s:reset";
-@import "x2s:grid";
-@import "x2s:typography";
+@import "muro:reset";
+@import "muro:grid";
+@import "muro:typography";
 ```
 
 Supported resolution patterns:
 
 - exact file path
-- `name.x2s`
-- `_name.x2s`
-- `name/index.x2s`
+- `name.mss`
+- `_name.mss`
+- `name/index.mss`
 
 Built-in module aliases:
 
-- `x2s:reset` or `@x2s/reset`
-- `x2s:grid` or `@x2s/grid`
-- `x2s:typography` or `@x2s/typography`
-- `x2s:all` or `@x2s/all`
+- `muro:reset` or `@muro/reset`
+- `muro:grid` or `@muro/grid`
+- `muro:typography` or `@muro/typography`
+- `muro:all` or `@muro/all`
 
-The built-in modules are regular X2S sources, so their variables, rules, and mixins become available in the same way as file imports.
+The built-in modules are regular Muro sources, so their variables, rules, and mixins become available in the same way as file imports.
 
 ### Built-in module libraries
 
 #### Reset
 
-`x2s:reset` provides a practical baseline for box sizing, media defaults, form inheritance, and common list/button normalization.
+`muro:reset` provides a practical baseline for box sizing, media defaults, form inheritance, and common list/button normalization.
 
 #### Grid
 
-`x2s:grid` provides:
+`muro:grid` provides:
 
-- `.x2s-container`
-- `.x2s-row`
-- `.x2s-col`
-- `.x2s-span-1` through `.x2s-span-12`
-- `@mixin x2s-container($max, $padding)`
-- `@mixin x2s-row($gap)`
-- `@mixin x2s-span($count, $columns)`
+- `.mss-container`
+- `.mss-row`
+- `.mss-col`
+- `.mss-span-1` through `.mss-span-12`
+- `@mixin muro-container($max, $padding)`
+- `@mixin muro-row($gap)`
+- `@mixin muro-span($count, $columns)`
 
 Example:
 
-```x2s
-@import "x2s:grid";
+```mss
+@import "muro:grid";
 
 .page {
-  @include x2s-container(80rem, 2rem);
+  @include muro-container(80rem, 2rem);
 }
 
 .gallery {
-  @include x2s-row(2rem);
+  @include muro-row(2rem);
 }
 ```
 
 #### Typography
 
-`x2s:typography` provides:
+`muro:typography` provides:
 
 - base `body`, heading, and code styles
-- `.x2s-prose`
-- `.x2s-balance`
-- `.x2s-kicker`
-- `@mixin x2s-heading($size, $weight)`
-- `@mixin x2s-copy($measure)`
+- `.mss-prose`
+- `.mss-balance`
+- `.mss-kicker`
+- `@mixin muro-heading($size, $weight)`
+- `@mixin muro-copy($measure)`
 
 Example:
 
-```x2s
-@import "x2s:typography";
+```mss
+@import "muro:typography";
 
 .article-title {
-  @include x2s-heading(4rem, 800);
+  @include muro-heading(4rem, 800);
 }
 
 .article-body {
-  @include x2s-copy(72ch);
+  @include muro-copy(72ch);
 }
 ```
 
 ### Mixins and includes
 
-```x2s
+```mss
 @mixin card($radius: 12px) {
   border-radius: $radius;
   display: flex;
@@ -358,7 +364,7 @@ Example:
 
 ### Extend
 
-```x2s
+```mss
 .button {
   padding: 12px 16px;
 }
@@ -370,7 +376,7 @@ Example:
 
 ### Conditionals and loops
 
-```x2s
+```mss
 @if $theme == dark {
   body {
     color: white;
@@ -392,7 +398,7 @@ Example:
 
 ### Theme baking
 
-```x2s
+```mss
 .button {
   color: light(#111111) dark(#f5f5f5);
 }
@@ -406,7 +412,7 @@ This generates the light value in the base rule and the dark value inside:
 
 ### Semantic layers
 
-```x2s
+```mss
 .modal {
   layer: modal;
 }
@@ -425,13 +431,13 @@ This compiles to a named `z-index`. Current defaults include:
 
 You can also register custom layer names:
 
-```x2s
+```mss
 @layers page, nav, modal, tooltip;
 ```
 
-### Xerx Guard locks
+### Muro Guard locks
 
-```x2s
+```mss
 .brand-button {
   color: #111111;
   @lock color;
@@ -440,7 +446,7 @@ You can also register custom layer names:
 
 Or:
 
-```x2s
+```mss
 .theme {
   color: #111111;
 }
@@ -452,11 +458,11 @@ If a later rule tries to override a locked property, compilation fails.
 
 ### Automatic shared utilities
 
-X2S now scans for repeated declaration groups across compiled rules and emits shared utility blocks automatically.
+Muro now scans for repeated declaration groups across compiled rules and emits shared utility blocks automatically.
 
 Example input:
 
-```x2s
+```mss
 .card {
   display: flex;
   align-items: center;
@@ -473,11 +479,11 @@ Example input:
 Example output shape:
 
 ```css
-.x2s-u-1, .card, .badge {
-  --x2s-u-1-display-0: -webkit-box;
-  --x2s-u-1-display-1: -ms-flexbox;
-  --x2s-u-1-display-2: flex;
-  --x2s-u-1-align-items-3: center;
+.muro-u-1, .card, .badge {
+  --muro-u-1-display-0: -webkit-box;
+  --muro-u-1-display-1: -ms-flexbox;
+  --muro-u-1-display-2: flex;
+  --muro-u-1-align-items-3: center;
 }
 ```
 
@@ -487,7 +493,7 @@ The original rules keep their declaration order, but repeated values are rewritt
 
 ### Math
 
-```x2s
+```mss
 .col {
   width: math(100% / 3);
 }
@@ -495,7 +501,7 @@ The original rules keep their declaration order, but repeated values are rewritt
 
 ### Color helpers
 
-```x2s
+```mss
 .card {
   color: lighten(#224466, 12%);
   border-color: darken(#224466, 10%);
@@ -506,7 +512,7 @@ The original rules keep their declaration order, but repeated values are rewritt
 
 ### Container helpers
 
-```x2s
+```mss
 .panel {
   width: cw(50%);
   height: ch(100%);
@@ -535,16 +541,16 @@ These helpers accept plain percentages and expression forms. Examples:
 
 ## Asset pipeline
 
-X2S now scans declaration values for local raster `url(...)` references ending in `.png`, `.jpg`, or `.jpeg`. When asset processing is enabled and a converter is available, it:
+Muro now scans declaration values for local raster `url(...)` references ending in `.png`, `.jpg`, or `.jpeg`. When asset processing is enabled and a converter is available, it:
 
-1. resolves the source asset relative to the `.x2s` file that referenced it
+1. resolves the source asset relative to the `.mss` file that referenced it
 2. emits a generated `.webp` file
 3. rewrites the CSS URL to the emitted asset path
 4. adds the source asset to watch-mode dependencies
 
 Example input:
 
-```x2s
+```mss
 .hero {
   background-image: url("./hero.png");
 }
@@ -554,27 +560,27 @@ Example output shape:
 
 ```css
 .hero {
-  background-image: url("./x2s-assets/hero-1a2b3c4d.webp");
+  background-image: url("./muro-assets/hero-1a2b3c4d.webp");
 }
 ```
 
 Converter resolution order:
 
-- `X2S_WEBP_CONVERTER` environment variable
+- `MURO_WEBP_CONVERTER` environment variable
 - `cwebp`
 - `magick`
 - `ffmpeg`
 
 Notes:
 
-- if no converter is available, X2S leaves the original URL in place and emits a warning
-- generated assets default to `x2s-assets/` beside the output CSS file
+- if no converter is available, Muro leaves the original URL in place and emits a warning
+- generated assets default to `muro-assets/` beside the output CSS file
 - `--asset-dir` overrides that output location
 - `--no-assets` disables rewriting entirely
 
 ## Polyfilling and prefixing
 
-X2S now adds a broader zero-config fallback layer for several modern CSS properties and values, including:
+Muro now adds a broader zero-config fallback layer for several modern CSS properties and values, including:
 
 - `display: flex`
 - `display: inline-flex`
@@ -619,11 +625,11 @@ This is still not a full PostCSS replacement, but it is materially broader than 
 
 ## Source maps
 
-X2S now emits standard source maps in source map v3 format.
+Muro now emits standard source maps in source map v3 format.
 
 Current behavior:
 
-- generated CSS can be linked to original `.x2s` source files
+- generated CSS can be linked to original `.mss` source files
 - source contents are embedded in the map
 - mappings are generated at rule and declaration emission points
 
@@ -631,7 +637,7 @@ This is sufficient for browser devtools and editor integrations, but it is still
 
 ## Purge behavior
 
-When `--purge` is used, X2S scans content files for selector usage in:
+When `--purge` is used, Muro scans content files for selector usage in:
 
 - HTML tags
 - `class` and `className`
@@ -647,7 +653,7 @@ Unused rules are removed from the final CSS bundle.
 
 Watch mode:
 
-- watches source `.x2s` files and imported dependencies
+- watches source `.mss` files and imported dependencies
 - watches local assets referenced for `.webp` conversion
 - watches purge-content files and directories when `--purge` is enabled
 - ignores its own generated `.css` output to avoid rebuild loops
@@ -662,21 +668,21 @@ import { compileEntry, compileString } from './src/index';
 
 ### `compileEntry(entryPath, options)`
 
-Compiles a single `.x2s` file or an entire directory.
+Compiles a single `.mss` file or an entire directory.
 
 ### `compileString(source, filePath, options)`
 
-Compiles inline X2S source and returns the generated CSS and optional source map.
+Compiles inline Muro source and returns the generated CSS and optional source map.
 
 ## How the compiler is built
 
 High-level pipeline:
 
-1. `src/parser.ts` reads X2S source and produces an AST.
+1. `src/parser.ts` reads Muro source and produces an AST.
 2. `src/compiler.ts` walks the AST, resolves variables, context-aware globals, mixins, loops, themes, and extends.
 3. The compiler emits normalized rules and declarations.
 4. Deduplication, purge, and shared-utility extraction run before final rendering.
-5. `src/source-map.ts` builds a source map from generated output back to original `.x2s` locations.
+5. `src/source-map.ts` builds a source map from generated output back to original `.mss` locations.
 6. `src/index.ts` writes CSS, optional source maps, and handles watch mode.
 
 ## VS Code support
@@ -684,18 +690,18 @@ High-level pipeline:
 VS Code language support lives in:
 
 - `editors/vscode/package.json`
-- `editors/vscode/syntaxes/x2s.tmLanguage.json`
+- `editors/vscode/syntaxes/muro.tmLanguage.json`
 - `editors/vscode/language-configuration.json`
-- `editors/vscode/themes/x2s-icon-theme.json`
+- `editors/vscode/themes/muro-icon-theme.json`
 
 That support currently provides:
 
-- `.x2s` language registration
+- `.mss` language registration
 - syntax highlighting
 - comment configuration
 - bracket pairing
-- a custom `x2s` file icon theme
+- a custom `muro` file icon theme
 
 ## Current gaps
 
-The main remaining gaps are ecosystem breadth rather than the core roadmap features from `nextfeatures.md`. X2S still does not try to fully replicate PostCSS-scale browser transforms or writing-mode-perfect logical property polyfills.
+The main remaining gaps are ecosystem breadth rather than the core roadmap features from `nextfeatures.md`. Muro still does not try to fully replicate PostCSS-scale browser transforms or writing-mode-perfect logical property polyfills.

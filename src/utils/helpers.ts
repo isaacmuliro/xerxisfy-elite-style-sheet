@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+import { LEGACY_STYLE_EXTENSION, PRIMARY_STYLE_EXTENSION } from '../constants';
+
 interface CliOptions {
     entry?: string;
     output?: string;
@@ -68,9 +70,12 @@ export function resolveImportPath(importPath: string, fromFile: string): string 
     const ext = path.extname(rawTarget);
     const candidates = [
         rawTarget,
-        ext ? '' : `${rawTarget}.x2s`,
-        ext ? '' : path.join(path.dirname(rawTarget), `_${path.basename(rawTarget)}.x2s`),
-        ext ? '' : path.join(rawTarget, 'index.x2s')
+        ext ? '' : `${rawTarget}${PRIMARY_STYLE_EXTENSION}`,
+        ext ? '' : path.join(path.dirname(rawTarget), `_${path.basename(rawTarget)}${PRIMARY_STYLE_EXTENSION}`),
+        ext ? '' : path.join(rawTarget, `index${PRIMARY_STYLE_EXTENSION}`),
+        ext ? '' : `${rawTarget}${LEGACY_STYLE_EXTENSION}`,
+        ext ? '' : path.join(path.dirname(rawTarget), `_${path.basename(rawTarget)}${LEGACY_STYLE_EXTENSION}`),
+        ext ? '' : path.join(rawTarget, `index${LEGACY_STYLE_EXTENSION}`)
     ].filter(Boolean);
 
     for (const candidate of candidates) {
@@ -91,15 +96,18 @@ export function discoverEntries(entryPath: string): string[] {
 
     const stats = fs.statSync(absoluteEntry);
     if (stats.isDirectory()) {
-        const discovered = walkDirectory(absoluteEntry, '.x2s', false);
+        const discovered = [
+            ...walkDirectory(absoluteEntry, PRIMARY_STYLE_EXTENSION, false),
+            ...walkDirectory(absoluteEntry, LEGACY_STYLE_EXTENSION, false)
+        ];
         if (discovered.length === 0) {
-            throw new Error(`No .x2s files found in ${absoluteEntry}`);
+            throw new Error(`No ${PRIMARY_STYLE_EXTENSION} or ${LEGACY_STYLE_EXTENSION} files found in ${absoluteEntry}`);
         }
         return discovered;
     }
 
-    if (!absoluteEntry.endsWith('.x2s')) {
-        throw new Error(`Expected a .x2s file or directory, received ${absoluteEntry}`);
+    if (!absoluteEntry.endsWith(PRIMARY_STYLE_EXTENSION) && !absoluteEntry.endsWith(LEGACY_STYLE_EXTENSION)) {
+        throw new Error(`Expected a ${PRIMARY_STYLE_EXTENSION} or ${LEGACY_STYLE_EXTENSION} file or directory, received ${absoluteEntry}`);
     }
 
     return [absoluteEntry];

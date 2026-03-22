@@ -1,7 +1,7 @@
 {
-  "name": "x2s-vscode-support",
-  "displayName": "X2S Language Support",
-  "description": "Language support and file icons for Xerxisfy Elite Style Sheet (.x2s).",
+  "name": "muro-vscode-support",
+  "displayName": "Muro Language Support",
+  "description": "Language support and file icons for Muro Style Sheet (.mss).",
   "version": "0.0.1",
   "publisher": "xerxisfy",
   "engines": {
@@ -12,18 +12,21 @@
     "Themes"
   ],
   "activationEvents": [
-    "onLanguage:x2s"
+    "onLanguage:muro"
   ],
   "contributes": {
     "languages": [
       {
-        "id": "x2s",
+        "id": "muro",
         "aliases": [
+          "Muro",
+          "muro",
+          "Muro Style Sheet",
           "X2S",
-          "x2s",
-          "Xerxisfy Elite Style Sheet"
+          "x2s"
         ],
         "extensions": [
+          ".mss",
           ".x2s"
         ],
         "configuration": "./language-configuration.json"
@@ -31,16 +34,16 @@
     ],
     "grammars": [
       {
-        "language": "x2s",
-        "scopeName": "source.x2s",
-        "path": "./syntaxes/x2s.tmLanguage.json"
+        "language": "muro",
+        "scopeName": "source.muro",
+        "path": "./syntaxes/muro.tmLanguage.json"
       }
     ],
     "iconThemes": [
       {
-        "id": "x2s-icons",
-        "label": "X2S Icons",
-        "path": "./themes/x2s-icon-theme.json"
+        "id": "muro-icons",
+        "label": "Muro Icons",
+        "path": "./themes/muro-icon-theme.json"
       }
     ]
   }

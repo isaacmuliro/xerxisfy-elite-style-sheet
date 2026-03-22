@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 
 import { Compiler } from './compiler';
+import {
+    LEGACY_CLI_NAME,
+    PRIMARY_CLI_NAME,
+    PRIMARY_STYLE_EXTENSION
+} from './constants';
 import { CompileOptions, CompileResult } from './types';
 import { ensureDirectory, normalizePath, parseCliArguments, walkDirectory } from './utils/helpers';
 
 const fs = require('fs');
 const path = require('path');
 const { Buffer } = require('buffer');
-const WATCHABLE_PATTERN = /\.(x2s|html|js|jsx|ts|tsx)$/i;
+const WATCHABLE_PATTERN = /\.(mss|x2s|html|js|jsx|ts|tsx)$/i;
 
 function compileEntry(entryPath: string, options: CompileOptions = {}): CompileResult {
     const compiler = new Compiler({
@@ -17,7 +22,7 @@ function compileEntry(entryPath: string, options: CompileOptions = {}): CompileR
     return compiler.compileEntry(entryPath);
 }
 
-function compileString(source: string, filePath: string = 'inline.x2s', options: CompileOptions = {}): CompileResult {
+function compileString(source: string, filePath: string = `inline${PRIMARY_STYLE_EXTENSION}`, options: CompileOptions = {}): CompileResult {
     const compiler = new Compiler({
         ...options,
         cwd: options.cwd || process.cwd()
@@ -30,10 +35,10 @@ function defaultOutputPath(entryPath: string): string {
     const stats = fs.statSync(absolutePath);
 
     if (stats.isDirectory()) {
-        return path.join(absolutePath, 'x2s.css');
+        return path.join(absolutePath, `${PRIMARY_CLI_NAME}.css`);
     }
 
-    return absolutePath.replace(/\.x2s$/i, '.css');
+    return absolutePath.replace(/\.(mss|x2s)$/i, '.css');
 }
 
 function sourceMapOutputPath(outputPath: string): string {
@@ -89,7 +94,7 @@ function runCompilation(entryPath: string, outputPath: string, options: CompileO
 
 function printUsage(): void {
     console.log([
-        'Usage: x2s <input-file-or-directory> [output.css] [options]',
+        `Usage: ${PRIMARY_CLI_NAME} <input-file-or-directory> [output.css] [options]`,
         '',
         'Options:',
         '  --watch, -w       Rebuild on change',
@@ -99,7 +104,9 @@ function printUsage(): void {
         '  --asset-dir <dir> Write generated .webp assets to a custom directory',
         '  --purge <paths>   Comma-separated content paths for ghost purging',
         '  --no-assets       Disable automatic .webp asset processing',
-        '  --no-dedupe       Disable repeated-rule deduplication'
+        '  --no-dedupe       Disable repeated-rule deduplication',
+        '',
+        `Legacy compatibility: ${LEGACY_CLI_NAME} and .x2s remain supported for one release.`
     ].join('\n'));
 }
 
@@ -132,6 +139,54 @@ function collectContentFiles(rootPath: string): string[] {
     });
 
     return files.map((filePath: string) => normalizePath(filePath));
+}
+
+function fileMtime(filePath: string): number | undefined {
+    if (!fs.existsSync(filePath)) {
+        return undefined;
+    }
+
+    return fs.statSync(filePath).mtimeMs;
+}
+
+function snapshotWatchableDirectory(directoryPath: string, outputPath: string): Map<string, number> {
+    const snapshot = new Map<string, number>();
+    const absoluteDirectory = normalizePath(directoryPath);
+    const absoluteOutput = normalizePath(outputPath);
+
+    if (!fs.existsSync(absoluteDirectory) || !fs.statSync(absoluteDirectory).isDirectory()) {
+        return snapshot;
+    }
+
+    const entries = fs.readdirSync(absoluteDirectory, { withFileTypes: true });
+    entries.forEach((entry: any) => {
+        if (!entry.isFile()) {
+            return;
+        }
+
+        const fullPath = normalizePath(path.join(absoluteDirectory, entry.name));
+        if (fullPath === absoluteOutput || !WATCHABLE_PATTERN.test(fullPath)) {
+            return;
+        }
+
+        snapshot.set(fullPath, fs.statSync(fullPath).mtimeMs);
+    });
+
+    return snapshot;
+}
+
+function snapshotsDiffer(left: Map<string, number>, right: Map<string, number>): boolean {
+    if (left.size !== right.size) {
+        return true;
+    }
+
+    for (const [filePath, mtime] of left.entries()) {
+        if (right.get(filePath) !== mtime) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function collectWatchTargets(
@@ -184,6 +239,8 @@ function collectWatchTargets(
 function watchProject(entryPath: string, outputPath: string, options: CompileOptions): void {
     let watchers: any[] = [];
     let timer: any = null;
+    const watchedFileMtims = new Map<string, number | undefined>();
+    const watchedDirectorySnapshots = new Map<string, Map<string, number>>();
     let lastWatchTargets = collectWatchTargets(
         entryPath,
         [entryPath],
@@ -207,6 +264,12 @@ function watchProject(entryPath: string, outputPath: string, options: CompileOpt
 
             const absoluteTarget = normalizePath(targetPath);
             const isDirectory = fs.statSync(absoluteTarget).isDirectory();
+            if (isDirectory) {
+                watchedDirectorySnapshots.set(absoluteTarget, snapshotWatchableDirectory(absoluteTarget, absoluteOutput));
+            } else {
+                watchedFileMtims.set(absoluteTarget, fileMtime(absoluteTarget));
+            }
+
             const watcher = fs.watch(absoluteTarget, { persistent: true }, (_eventType: string, filename: string) => {
                 if (filename) {
                     const changedPath = normalizePath(path.resolve(
@@ -225,6 +288,20 @@ function watchProject(entryPath: string, outputPath: string, options: CompileOpt
                     if (!isDirectory && !WATCHABLE_PATTERN.test(absoluteTarget)) {
                         return;
                     }
+                } else if (isDirectory) {
+                    const previousSnapshot = watchedDirectorySnapshots.get(absoluteTarget) || new Map<string, number>();
+                    const nextSnapshot = snapshotWatchableDirectory(absoluteTarget, absoluteOutput);
+                    if (!snapshotsDiffer(previousSnapshot, nextSnapshot)) {
+                        return;
+                    }
+                    watchedDirectorySnapshots.set(absoluteTarget, nextSnapshot);
+                } else {
+                    const previousMtime = watchedFileMtims.get(absoluteTarget);
+                    const nextMtime = fileMtime(absoluteTarget);
+                    if (previousMtime === nextMtime) {
+                        return;
+                    }
+                    watchedFileMtims.set(absoluteTarget, nextMtime);
                 }
 
                 if (timer) {

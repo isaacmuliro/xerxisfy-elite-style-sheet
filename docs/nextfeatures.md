@@ -20,7 +20,7 @@ No roadmap items are currently open in this file. Further work is now refinement
 Current source map support is now present and usable from the CLI with:
 
 ```bash
-npm run x2s -- app.x2s app.css --sourcemap
+npm run muro -- app.mss app.css --sourcemap
 ```
 
 Current prefixing covers:
@@ -65,12 +65,12 @@ Current asset processing covers:
 
 - local `.png`, `.jpg`, and `.jpeg` URLs inside `url(...)`
 - generated `.webp` files written beside the compiled CSS by default
-- custom converter override through `X2S_WEBP_CONVERTER`
+- custom converter override through `MURO_WEBP_CONVERTER`
 - built-in converter probing for `cwebp`, `magick`, and `ffmpeg`
 
 Built-in module imports now include:
 
-- `x2s:reset`
-- `x2s:grid`
-- `x2s:typography`
-- `x2s:all`
+- `muro:reset`
+- `muro:grid`
+- `muro:typography`
+- `muro:all`

@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = void 0;
+const constants_1 = require("./constants");
 class Parser {
-    constructor(source, filePath = 'inline.x2s') {
+    constructor(source, filePath = `inline${constants_1.PRIMARY_STYLE_EXTENSION}`) {
         this.source = source;
         this.filePath = filePath;
         this.index = 0;
@@ -16,7 +17,7 @@ class Parser {
     parse() {
         const invalidBacktick = this.source.indexOf('`');
         if (invalidBacktick !== -1) {
-            throw new Error(this.formatError('Unexpected "`". Markdown/code fences are not valid X2S syntax', invalidBacktick));
+            throw new Error(this.formatError(`Unexpected "\`". Markdown/code fences are not valid ${constants_1.PRIMARY_BRAND_NAME} syntax`, invalidBacktick));
         }
         return {
             type: 'Stylesheet',
