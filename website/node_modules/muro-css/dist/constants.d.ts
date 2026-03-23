@@ -1,0 +1,11 @@
+export declare const PRIMARY_STYLE_EXTENSION = ".mss";
+export declare const LEGACY_STYLE_EXTENSION = ".x2s";
+export declare const SUPPORTED_STYLE_EXTENSIONS: string[];
+export declare const PRIMARY_CLI_NAME = "muro";
+export declare const LEGACY_CLI_NAME = "x2s";
+export declare const PRIMARY_BRAND_NAME = "Muro Style Sheet";
+export declare const PRIMARY_ASSET_DIR = "muro-assets";
+export declare const PRIMARY_UTILITY_PREFIX = "muro-u";
+export declare const PRIMARY_WEBP_ENV_VAR = "MURO_WEBP_CONVERTER";
+export declare const LEGACY_WEBP_ENV_VAR = "X2S_WEBP_CONVERTER";
+export declare const PRIMARY_LOCK_NAME = "Muro Guard";

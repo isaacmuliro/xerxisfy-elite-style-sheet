@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Muro Style Sheet</title>
+  <meta
+    name="description"
+    content="Muro Style Sheet is a monochrome-first CSS compiler for teams that want one clean .mss entry, one output CSS bundle, and docs-grade ergonomics."
+  >
+  <script>
+    (() => {
+      const key = "muro-theme";
+      const saved = window.localStorage.getItem(key);
+      const theme = saved === "light" || saved === "dark" ? saved : "dark";
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+  <link rel="stylesheet" href="./muro.css">
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <div class="topbar__inner">
+        <a class="brand-lockup" href="#top">
+          <span class="brand-mark"><i class="fa-solid fa-layer-group"></i></span>
+          <span class="brand-copy">
+            <strong>Muro</strong>
+            <span>Style Sheet documentation</span>
+          </span>
+        </a>
+
+        <nav class="topbar__nav" aria-label="Primary">
+          <a href="#overview">Overview</a>
+          <a href="#features">Features</a>
+          <a href="#usage">Usage</a>
+          <a href="#docs">Docs</a>
+          <a href="#install">Install</a>
+        </nav>
+
+        <div class="topbar__utility">
+          <div class="theme-switcher" role="group" aria-label="Theme switcher">
+            <button class="theme-toggle" type="button" data-theme-option="light" aria-pressed="false">
+              <i class="fa-regular fa-sun"></i>
+              <span>Light</span>
+            </button>
+            <button class="theme-toggle" type="button" data-theme-option="dark" aria-pressed="false">
+              <i class="fa-regular fa-moon"></i>
+              <span>Dark</span>
+            </button>
+          </div>
+          <a class="button button--primary" href="#install">Install Muro</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-grid" id="top">
+      <aside class="sidebar">
+        <div class="sidebar-card">
+          <div class="sidebar-title">Docs index</div>
+
+          <div class="nav-group">
+            <div class="nav-group__title">Getting started</div>
+            <ul class="track-list">
+              <li><a class="track-item" href="#overview"><i class="fa-solid fa-house"></i><span><strong>Overview</strong>What Muro is, what it compiles, and the shape of the workflow.</span></a></li>
+              <li><a class="track-item" href="#install"><i class="fa-solid fa-download"></i><span><strong>Install</strong>Add `muro-css`, then keep the command surface branded around `muro`.</span></a></li>
+            </ul>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-group__title">Compiler</div>
+            <ul class="track-list">
+              <li><a class="track-item" href="#features"><i class="fa-solid fa-bolt"></i><span><strong>Feature set</strong>Utilities, theming, source maps, asset rewriting, and polyfills.</span></a></li>
+              <li><a class="track-item" href="#usage"><i class="fa-solid fa-code"></i><span><strong>Usage</strong>Compile a single `.mss` entry into one CSS file for the whole site.</span></a></li>
+              <li><a class="track-item" href="#docs"><i class="fa-solid fa-book-open"></i><span><strong>Docs snapshot</strong>Built-ins, flags, migration notes, and the shape of the syntax.</span></a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="sidebar-card sidebar-card--muted">
+          <div class="sidebar-title">Why teams use it</div>
+          <ul class="support-list">
+            <li>One `.mss` entry can import tokens, layout, and components into one bundle.</li>
+            <li>Shared utilities, purge, source maps, and asset handling stay in the same compiler.</li>
+            <li>The current release still accepts legacy `.x2s` input while teams migrate.</li>
+          </ul>
+        </div>
+      </aside>
+
+      <main class="main-column">
+        <div class="section-stack">
+          <section class="hero-card" id="overview">
+            <div class="hero-grid">
+              <div class="hero-copy">
+                <div class="eyebrow"><i class="fa-solid fa-file-lines"></i><span>Documentation</span></div>
+                <h1>Muro builds the CSS layer of a product from one clean `.mss` entry.</h1>
+                <p>
+                  This site is intentionally simple: one compiler, one output file, and a documentation layout that shows
+                  the workflow directly. Muro handles variables, nesting, modules, source maps, utility generation,
+                  asset rewriting, theme baking, and watch mode without handing control to a stack of extra CSS tools.
+                </p>
+                <div class="hero-actions">
+                  <a class="button button--primary" href="#install"><i class="fa-solid fa-download"></i>Install</a>
+                  <a class="button button--secondary" href="#usage"><i class="fa-solid fa-terminal"></i>See commands</a>
+                </div>
+                <div class="hero-meta">
+                  <div class="meta-card">
+                    <strong>.mss</strong>
+                    <span>Primary source format</span>
+                  </div>
+                  <div class="meta-card">
+                    <strong>muro</strong>
+                    <span>Primary CLI command</span>
+                  </div>
+                  <div class="meta-card">
+                    <strong>1 CSS</strong>
+                    <span>Single compiled output</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="code-card hero-command">
+                <div class="code-card__head">
+                  <span><i class="fa-solid fa-terminal"></i> Quick start</span>
+                  <button class="copy-button" type="button" data-copy-target="quick-start-snippet">Copy</button>
+                </div>
+                <pre id="quick-start-snippet"><code>npm i -D muro-css
+
+{
+  "scripts": {
+    "muro": "muro src/app.mss public/app.css",
+    "muro:watch": "muro src/app.mss public/app.css --watch"
+  }
+}
+
+npm run muro
+npm run muro:watch</code></pre>
+              </div>
+            </div>
+          </section>
+
+          <section class="section-card" id="features">
+            <div class="section-head">
+              <div class="eyebrow"><i class="fa-solid fa-bolt"></i><span>Feature set</span></div>
+              <h2>One compiler handling the work teams usually spread across several tools.</h2>
+              <p>
+                The focus is not novelty for its own sake. Muro is useful when a project needs expressive authoring syntax,
+                modern browser handling, and production output that still maps back to source cleanly.
+              </p>
+            </div>
+
+            <div class="feature-grid">
+              <article class="feature-card">
+                <span class="icon-pill"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                <h3>Shared utility generation</h3>
+                <p>Repeated declaration groups are detected and rewritten into generated `.muro-u-*` utilities and custom properties.</p>
+              </article>
+              <article class="feature-card">
+                <span class="icon-pill"><i class="fa-solid fa-circle-half-stroke"></i></span>
+                <h3>Theme baking</h3>
+                <p>Use `light(...) dark(...)` in authored rules and let Muro emit the matching dark-mode output for you.</p>
+              </article>
+              <article class="feature-card">
+                <span class="icon-pill"><i class="fa-solid fa-shield-halved"></i></span>
+                <h3>Muro Guard</h3>
+                <p>Lock brand-critical declarations so invalid overrides stop at compile time instead of leaking into production.</p>
+              </article>
+              <article class="feature-card">
+                <span class="icon-pill"><i class="fa-solid fa-box-archive"></i></span>
+                <h3>Asset rewriting</h3>
+                <p>Raster asset URLs can be converted to generated `.webp` files during the build when a converter is available.</p>
+              </article>
+              <article class="feature-card">
+                <span class="icon-pill"><i class="fa-solid fa-ruler-combined"></i></span>
+                <h3>Container math</h3>
+                <p>Use `cw`, `ch`, `ci`, `cb`, `cmin`, and `cmax` helpers for container-aware sizing expressions.</p>
+              </article>
+              <article class="feature-card">
+                <span class="icon-pill"><i class="fa-solid fa-map-location-dot"></i></span>
+                <h3>Source maps and watch</h3>
+                <p>Keep browser inspection tied to original source files and stay in an edit loop with one watch command.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="section-card" id="usage">
+            <div class="section-head">
+              <div class="eyebrow"><i class="fa-solid fa-code"></i><span>Usage</span></div>
+              <h2>Use one entry file to compose a whole site stylesheet.</h2>
+              <p>
+                This website follows the same pattern it documents: `src/app.mss` imports tokens, layout, and component partials,
+                then compiles into one `muro.css` file beside the HTML shell.
+              </p>
+            </div>
+
+            <div class="docs-grid">
+              <div class="code-card">
+                <div class="code-card__head">
+                  <span><i class="fa-solid fa-file-lines"></i> `src/app.mss`</span>
+                  <button class="copy-button" type="button" data-copy-target="entry-snippet">Copy</button>
+                </div>
+                <pre id="entry-snippet"><code>@import "./_base";
+@import "./_layout";
+@import "./_components";
+
+.site-shell {
+  color: light(#121315) dark(#f4f4f1);
+}</code></pre>
+              </div>
+
+              <div class="code-card">
+                <div class="code-card__head">
+                  <span><i class="fa-solid fa-terminal"></i> Commands</span>
+                  <button class="copy-button" type="button" data-copy-target="commands-snippet">Copy</button>
+                </div>
+                <pre id="commands-snippet"><code>npm run muro
+npm run muro:watch
+
+npx muro src/app.mss muro.css
+npx muro src/app.mss muro.css --sourcemap
+npx muro src/app.mss muro.css --watch</code></pre>
+              </div>
+            </div>
+
+            <div class="callout">
+              <strong>Site build shape:</strong>
+              One entry, one output file, and no separate post-processing pass to bolt on themes, maps, purge, or utility extraction.
+            </div>
+          </section>
+
+          <section class="section-card" id="docs">
+            <div class="section-head">
+              <div class="eyebrow"><i class="fa-solid fa-book-open"></i><span>Docs snapshot</span></div>
+              <h2>Start with the commands and imports developers look for first.</h2>
+              <p>
+                The surface area is intentionally legible. Built-ins are importable, comments are flexible, and the migration path
+                still accepts old `.x2s` input while teams move to `.mss`.
+              </p>
+            </div>
+
+            <div class="mini-grid">
+              <article class="mini-card">
+                <span class="icon-pill"><i class="fa-solid fa-brackets-curly"></i></span>
+                <h3>Built-in imports</h3>
+                <pre id="builtin-snippet"><code>@import "muro:reset";
+@import "muro:grid";
+@import "muro:typography";
+
+.frame {
+  @include muro-container(80rem, 1.5rem);
+}</code></pre>
+              </article>
+
+              <article class="mini-card">
+                <span class="icon-pill"><i class="fa-solid fa-list-check"></i></span>
+                <h3>Language notes</h3>
+                <ul class="inline-list">
+                  <li>`.mss` is the primary format, with `.x2s` kept as a bridge release input.</li>
+                  <li>`//`, leading `#`, and `** ... **` comments are all supported.</li>
+                  <li>`muro:all` can pull the built-in reset, grid, and typography modules together.</li>
+                </ul>
+              </article>
+
+              <article class="mini-card">
+                <span class="icon-pill"><i class="fa-solid fa-sliders"></i></span>
+                <h3>Important flags</h3>
+                <ul class="inline-list">
+                  <li>`--watch` for iterative development loops.</li>
+                  <li>`--sourcemap` or `--inline-sourcemap` for browser inspection.</li>
+                  <li>`--purge`, `--asset-dir`, and `--no-assets` for production control.</li>
+                </ul>
+              </article>
+            </div>
+          </section>
+
+          <section class="section-card" id="install">
+            <div class="section-head">
+              <div class="eyebrow"><i class="fa-solid fa-download"></i><span>Install</span></div>
+              <h2>Install once, then keep the workflow branded around `muro`.</h2>
+              <p>
+                Use the package as a dev dependency in product repos. The package name is `muro-css`; the command developers
+                actually run remains `muro`.
+              </p>
+            </div>
+
+            <div class="docs-grid">
+              <div class="code-card">
+                <div class="code-card__head">
+                  <span><i class="fa-solid fa-box-open"></i> Install path</span>
+                  <button class="copy-button" type="button" data-copy-target="install-snippet">Copy</button>
+                </div>
+                <pre id="install-snippet"><code>npm i -D muro-css
+
+{
+  "scripts": {
+    "muro": "muro src/app.mss public/app.css",
+    "muro:watch": "muro src/app.mss public/app.css --watch"
+  }
+}
+
+npm run muro</code></pre>
+              </div>
+
+              <div class="feature-card">
+                <span class="icon-pill"><i class="fa-solid fa-arrows-rotate"></i></span>
+                <h3>Migration bridge</h3>
+                <p>The current release still compiles legacy `.x2s` files and keeps the `x2s` binary alias alive for one transition window.</p>
+                <div class="tag-row">
+                  <span class="tag"><i class="fa-solid fa-file-code"></i>.mss</span>
+                  <span class="tag"><i class="fa-solid fa-terminal"></i>muro</span>
+                  <span class="tag"><i class="fa-solid fa-cubes"></i>muro-css</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <aside class="utility-rail">
+        <div class="rail-card">
+          <div class="rail-title">On this page</div>
+          <ul class="rail-list">
+            <li class="rail-item"><i class="fa-solid fa-house"></i><a href="#overview">Overview</a></li>
+            <li class="rail-item"><i class="fa-solid fa-bolt"></i><a href="#features">Feature set</a></li>
+            <li class="rail-item"><i class="fa-solid fa-code"></i><a href="#usage">Usage</a></li>
+            <li class="rail-item"><i class="fa-solid fa-book-open"></i><a href="#docs">Docs snapshot</a></li>
+            <li class="rail-item"><i class="fa-solid fa-download"></i><a href="#install">Install</a></li>
+          </ul>
+        </div>
+
+        <div class="rail-card">
+          <div class="rail-title">Quick commands</div>
+          <div class="terminal-chip">
+            <span id="command-run">npm run muro</span>
+            <button class="copy-button copy-button--chip" type="button" data-copy-target="command-run" aria-label="Copy npm run muro">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+          <div class="terminal-chip">
+            <span id="command-watch">npm run muro:watch</span>
+            <button class="copy-button copy-button--chip" type="button" data-copy-target="command-watch" aria-label="Copy npm run muro:watch">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+          <div class="terminal-chip">
+            <span id="command-direct">npx muro src/app.mss muro.css</span>
+            <button class="copy-button copy-button--chip" type="button" data-copy-target="command-direct" aria-label="Copy direct muro command">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="rail-card">
+          <div class="rail-title">Current release</div>
+          <ul class="support-list">
+            <li>Primary format: `.mss`</li>
+            <li>Primary command: `muro`</li>
+            <li>Legacy `.x2s` and `x2s` alias still compile during the bridge release.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="site-footer">
+      <span>Muro Style Sheet</span>
+      <span>Monochrome docs shell, compiled from one `.mss` entry into one `muro.css` output.</span>
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      const key = "muro-theme";
+      const root = document.documentElement;
+      const toggles = Array.from(document.querySelectorAll("[data-theme-option]"));
+      const copyButtons = Array.from(document.querySelectorAll("[data-copy-target]"));
+      const mainColumn = document.querySelector(".main-column");
+      const sections = Array.from(document.querySelectorAll(".section-stack > section[id]"));
+      const sectionLinks = Array.from(document.querySelectorAll('a[href^="#"]')).filter((link) => {
+        const hash = link.getAttribute("href");
+        return hash && hash !== "#" && document.querySelector(hash);
+      });
+
+      const applyTheme = (theme) => {
+        root.dataset.theme = theme;
+        toggles.forEach((toggle) => {
+          toggle.setAttribute("aria-pressed", String(toggle.dataset.themeOption === theme));
+        });
+      };
+
+      toggles.forEach((toggle) => {
+        toggle.addEventListener("click", () => {
+          const theme = toggle.dataset.themeOption;
+          window.localStorage.setItem(key, theme);
+          applyTheme(theme);
+        });
+      });
+
+      const copyText = async (text) => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+
+        const area = document.createElement("textarea");
+        area.value = text;
+        area.setAttribute("readonly", "");
+        area.style.position = "absolute";
+        area.style.left = "-9999px";
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        document.body.removeChild(area);
+      };
+
+      copyButtons.forEach((button) => {
+        button.addEventListener("click", async () => {
+          const id = button.dataset.copyTarget || "";
+          const target = document.getElementById(id);
+          if (!target) {
+            return;
+          }
+
+          const text = target.innerText.trim();
+          if (!text) {
+            return;
+          }
+
+          try {
+            await copyText(text);
+            const original = button.innerHTML;
+            button.classList.add("is-copied");
+            button.innerHTML = button.classList.contains("copy-button--chip") ? '<i class="fa-solid fa-check"></i>' : "Copied";
+            window.setTimeout(() => {
+              button.classList.remove("is-copied");
+              button.innerHTML = original;
+            }, 1400);
+          } catch (error) {
+            console.error("Copy failed", error);
+          }
+        });
+      });
+
+      sectionLinks.forEach((link) => {
+        link.addEventListener("click", (event) => {
+          const hash = link.getAttribute("href");
+          if (!hash) {
+            return;
+          }
+
+          const target = document.querySelector(hash);
+          if (!target) {
+            return;
+          }
+
+          event.preventDefault();
+
+          if (hash === "#top") {
+            if (window.innerWidth > 896 && mainColumn) {
+              mainColumn.scrollTo({ top: 0, behavior: "smooth" });
+            } else {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          } else {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+
+          window.history.replaceState(null, "", hash);
+        });
+      });
+
+      const setActiveSection = () => {
+        if (!sections.length) {
+          return;
+        }
+
+        const desktop = window.innerWidth > 896 && mainColumn;
+        const threshold = desktop ? mainColumn.getBoundingClientRect().top + 116 : 136;
+        let current = sections[0].id;
+
+        sections.forEach((section) => {
+          if (section.getBoundingClientRect().top <= threshold) {
+            current = section.id;
+          }
+        });
+
+        sectionLinks.forEach((link) => {
+          const active = link.getAttribute("href") === `#${current}`;
+          link.classList.toggle("is-active", active);
+        });
+      };
+
+      mainColumn?.addEventListener("scroll", setActiveSection, { passive: true });
+      window.addEventListener("scroll", setActiveSection, { passive: true });
+      window.addEventListener("resize", setActiveSection);
+
+      applyTheme(root.dataset.theme || "light");
+      setActiveSection();
+    })();
+  </script>
+</body>
+</html>

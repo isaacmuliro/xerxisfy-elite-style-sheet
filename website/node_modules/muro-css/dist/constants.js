@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PRIMARY_LOCK_NAME = exports.LEGACY_WEBP_ENV_VAR = exports.PRIMARY_WEBP_ENV_VAR = exports.PRIMARY_UTILITY_PREFIX = exports.PRIMARY_ASSET_DIR = exports.PRIMARY_BRAND_NAME = exports.LEGACY_CLI_NAME = exports.PRIMARY_CLI_NAME = exports.SUPPORTED_STYLE_EXTENSIONS = exports.LEGACY_STYLE_EXTENSION = exports.PRIMARY_STYLE_EXTENSION = void 0;
+exports.PRIMARY_STYLE_EXTENSION = '.mss';
+exports.LEGACY_STYLE_EXTENSION = '.x2s';
+exports.SUPPORTED_STYLE_EXTENSIONS = [exports.PRIMARY_STYLE_EXTENSION, exports.LEGACY_STYLE_EXTENSION];
+exports.PRIMARY_CLI_NAME = 'muro';
+exports.LEGACY_CLI_NAME = 'x2s';
+exports.PRIMARY_BRAND_NAME = 'Muro Style Sheet';
+exports.PRIMARY_ASSET_DIR = 'muro-assets';
+exports.PRIMARY_UTILITY_PREFIX = 'muro-u';
+exports.PRIMARY_WEBP_ENV_VAR = 'MURO_WEBP_CONVERTER';
+exports.LEGACY_WEBP_ENV_VAR = 'X2S_WEBP_CONVERTER';
+exports.PRIMARY_LOCK_NAME = 'Muro Guard';

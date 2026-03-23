@@ -1,0 +1,216 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.parseCliArguments = exports.splitByComma = exports.discoverEntries = exports.resolveImportPath = exports.walkDirectory = exports.ensureDirectory = exports.normalizePath = exports.validateInput = exports.formatString = void 0;
+const fs = require('fs');
+const path = require('path');
+const constants_1 = require("../constants");
+function formatString(input) {
+    return input.trim().replace(/\s+/g, ' ');
+}
+exports.formatString = formatString;
+function validateInput(input) {
+    return input.trim().length > 0;
+}
+exports.validateInput = validateInput;
+function normalizePath(filePath) {
+    return path.resolve(filePath);
+}
+exports.normalizePath = normalizePath;
+function ensureDirectory(filePath) {
+    const directory = path.dirname(filePath);
+    if (!fs.existsSync(directory)) {
+        fs.mkdirSync(directory, { recursive: true });
+    }
+}
+exports.ensureDirectory = ensureDirectory;
+function walkDirectory(rootPath, extension, includePartials = false) {
+    const files = [];
+    if (!fs.existsSync(rootPath)) {
+        return files;
+    }
+    const entries = fs.readdirSync(rootPath, { withFileTypes: true });
+    for (const entry of entries) {
+        const fullPath = path.join(rootPath, entry.name);
+        if (entry.isDirectory()) {
+            files.push(...walkDirectory(fullPath, extension, includePartials));
+            continue;
+        }
+        if (!entry.name.endsWith(extension)) {
+            continue;
+        }
+        if (!includePartials && path.basename(entry.name).startsWith('_')) {
+            continue;
+        }
+        files.push(fullPath);
+    }
+    return files.sort((left, right) => left.localeCompare(right));
+}
+exports.walkDirectory = walkDirectory;
+function resolveImportPath(importPath, fromFile) {
+    const baseDirectory = path.dirname(fromFile);
+    const rawTarget = path.isAbsolute(importPath) ? importPath : path.resolve(baseDirectory, importPath);
+    const ext = path.extname(rawTarget);
+    const candidates = [
+        rawTarget,
+        ext ? '' : `${rawTarget}${constants_1.PRIMARY_STYLE_EXTENSION}`,
+        ext ? '' : path.join(path.dirname(rawTarget), `_${path.basename(rawTarget)}${constants_1.PRIMARY_STYLE_EXTENSION}`),
+        ext ? '' : path.join(rawTarget, `index${constants_1.PRIMARY_STYLE_EXTENSION}`),
+        ext ? '' : `${rawTarget}${constants_1.LEGACY_STYLE_EXTENSION}`,
+        ext ? '' : path.join(path.dirname(rawTarget), `_${path.basename(rawTarget)}${constants_1.LEGACY_STYLE_EXTENSION}`),
+        ext ? '' : path.join(rawTarget, `index${constants_1.LEGACY_STYLE_EXTENSION}`)
+    ].filter(Boolean);
+    for (const candidate of candidates) {
+        if (fs.existsSync(candidate)) {
+            return candidate;
+        }
+    }
+    throw new Error(`Unable to resolve import "${importPath}" from ${fromFile}`);
+}
+exports.resolveImportPath = resolveImportPath;
+function discoverEntries(entryPath) {
+    const absoluteEntry = normalizePath(entryPath);
+    if (!fs.existsSync(absoluteEntry)) {
+        throw new Error(`Input path does not exist: ${absoluteEntry}`);
+    }
+    const stats = fs.statSync(absoluteEntry);
+    if (stats.isDirectory()) {
+        const discovered = [
+            ...walkDirectory(absoluteEntry, constants_1.PRIMARY_STYLE_EXTENSION, false),
+            ...walkDirectory(absoluteEntry, constants_1.LEGACY_STYLE_EXTENSION, false)
+        ];
+        if (discovered.length === 0) {
+            throw new Error(`No ${constants_1.PRIMARY_STYLE_EXTENSION} or ${constants_1.LEGACY_STYLE_EXTENSION} files found in ${absoluteEntry}`);
+        }
+        return discovered;
+    }
+    if (!absoluteEntry.endsWith(constants_1.PRIMARY_STYLE_EXTENSION) && !absoluteEntry.endsWith(constants_1.LEGACY_STYLE_EXTENSION)) {
+        throw new Error(`Expected a ${constants_1.PRIMARY_STYLE_EXTENSION} or ${constants_1.LEGACY_STYLE_EXTENSION} file or directory, received ${absoluteEntry}`);
+    }
+    return [absoluteEntry];
+}
+exports.discoverEntries = discoverEntries;
+function splitByComma(input) {
+    const items = [];
+    let quote = '';
+    let depth = 0;
+    let bracketDepth = 0;
+    let current = '';
+    for (let i = 0; i < input.length; i += 1) {
+        const char = input[i];
+        if (quote) {
+            current += char;
+            if (char === '\\' && i + 1 < input.length) {
+                current += input[i + 1];
+                i += 1;
+                continue;
+            }
+            if (char === quote) {
+                quote = '';
+            }
+            continue;
+        }
+        if (char === '"' || char === '\'') {
+            quote = char;
+            current += char;
+            continue;
+        }
+        if (char === '(') {
+            depth += 1;
+            current += char;
+            continue;
+        }
+        if (char === ')') {
+            depth = Math.max(depth - 1, 0);
+            current += char;
+            continue;
+        }
+        if (char === '[') {
+            bracketDepth += 1;
+            current += char;
+            continue;
+        }
+        if (char === ']') {
+            bracketDepth = Math.max(bracketDepth - 1, 0);
+            current += char;
+            continue;
+        }
+        if (char === ',' && depth === 0 && bracketDepth === 0) {
+            if (current.trim()) {
+                items.push(current.trim());
+            }
+            current = '';
+            continue;
+        }
+        current += char;
+    }
+    if (current.trim()) {
+        items.push(current.trim());
+    }
+    return items;
+}
+exports.splitByComma = splitByComma;
+function parseCliArguments(argv) {
+    const args = argv.slice(2);
+    const options = {
+        watch: false,
+        minify: false,
+        dedupe: true,
+        assets: true,
+        purgeContent: [],
+        sourceMap: false,
+        inlineSourceMap: false
+    };
+    for (let i = 0; i < args.length; i += 1) {
+        const value = args[i];
+        if (value === '--watch' || value === '-w') {
+            options.watch = true;
+            continue;
+        }
+        if (value === '--minify' || value === '-m') {
+            options.minify = true;
+            continue;
+        }
+        if (value === '--no-dedupe') {
+            options.dedupe = false;
+            continue;
+        }
+        if (value === '--no-assets') {
+            options.assets = false;
+            continue;
+        }
+        if (value === '--sourcemap' || value === '--map') {
+            options.sourceMap = true;
+            continue;
+        }
+        if (value === '--inline-sourcemap') {
+            options.inlineSourceMap = true;
+            options.sourceMap = true;
+            continue;
+        }
+        if ((value === '--output' || value === '-o') && args[i + 1]) {
+            options.output = args[i + 1];
+            i += 1;
+            continue;
+        }
+        if (value === '--asset-dir' && args[i + 1]) {
+            options.assetOutputDir = args[i + 1];
+            i += 1;
+            continue;
+        }
+        if (value === '--purge' && args[i + 1]) {
+            options.purgeContent.push(...splitByComma(args[i + 1]));
+            i += 1;
+            continue;
+        }
+        if (!options.entry) {
+            options.entry = value;
+            continue;
+        }
+        if (!options.output) {
+            options.output = value;
+            continue;
+        }
+    }
+    return options;
+}
+exports.parseCliArguments = parseCliArguments;

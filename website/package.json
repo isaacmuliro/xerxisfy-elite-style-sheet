@@ -1,0 +1,11 @@
+{
+  "name": "muro-website",
+  "private": true,
+  "scripts": {
+    "muro": "muro src/app.mss muro.css",
+    "muro:watch": "muro src/app.mss muro.css --watch"
+  },
+  "devDependencies": {
+    "muro-css": "^26.0.1"
+  }
+}
